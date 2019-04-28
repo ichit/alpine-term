@@ -1,0 +1,23 @@
+diff -uNr busybox-1.29.1/util-linux/getopt.c busybox-1.29.1.mod/util-linux/getopt.c
+--- busybox-1.29.1/util-linux/getopt.c	2018-07-02 14:23:06.000000000 +0300
++++ busybox-1.29.1.mod/util-linux/getopt.c	2018-07-31 14:48:08.180840268 +0300
+@@ -357,6 +357,10 @@
+ 	;
+ #endif
+ 
++#ifdef __ANDROID__
++extern char* __progname;
++#endif
++
+ int getopt_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
+ int getopt_main(int argc, char **argv)
+ {
+@@ -420,5 +424,8 @@
+ 	}
+ 
+ 	argv[n] = name ? name : argv[0];
++#ifdef __ANDROID__
++	__progname = argv[n];
++#endif
+ 	return generate_output(argv + n, argc - n, optstr, long_options);
+ }

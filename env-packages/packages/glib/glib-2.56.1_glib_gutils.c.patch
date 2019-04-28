@@ -1,0 +1,57 @@
+diff -uNr glib-2.56.1/glib/gutils.c glib-2.56.1.mod/glib/gutils.c
+--- glib-2.56.1/glib/gutils.c	2018-01-08 23:34:19.000000000 +0200
++++ glib-2.56.1.mod/glib/gutils.c	2018-08-14 17:08:34.049519466 +0300
+@@ -299,6 +299,26 @@
+ 
+ #endif
+ 
++
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
++#endif
++
++
+ /**
+  * g_find_program_in_path:
+  * @program: (type filename): a program name in the GLib file name encoding
+@@ -378,7 +398,7 @@
+        * what to search if PATH is unset. POSIX may, dunno.
+        */
+       
+-      path = "/bin:/usr/bin:.";
++      path = __prepend_prefix("/bin");
+     }
+ #else
+   n = GetModuleFileNameW (NULL, wfilename, MAXPATHLEN);
+@@ -2028,7 +2048,7 @@
+ 
+ #ifndef G_OS_WIN32
+       if (!data_dirs || !data_dirs[0])
+-          data_dirs = "/usr/local/share/:/usr/share/";
++          data_dirs = __prepend_prefix("/share/");
+ 
+       data_dir_vector = g_strsplit (data_dirs, G_SEARCHPATH_SEPARATOR_S, 0);
+ #else
+@@ -2104,7 +2124,7 @@
+ 	}
+ #else
+       if (!conf_dirs || !conf_dirs[0])
+-          conf_dirs = "/etc/xdg";
++          conf_dirs = __prepend_prefix("/etc/xdg");
+ 
+       conf_dir_vector = g_strsplit (conf_dirs, G_SEARCHPATH_SEPARATOR_S, 0);
+ #endif

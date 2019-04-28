@@ -1,0 +1,269 @@
+% Alpine Term
+
+This is an application emulating a headless x86_64 machine which runs an
+[Alpine Linux](https://alpinelinux.org) operating system.
+
+Alpine Term is based on sources of [Termux](https://github.com/termux/termux-app)
+which is a terminal emulator for Android. Core of this application is the
+[QEMU](https://qemu.org) - a generic and open source machine emulator and
+virtualizer.
+
+### Features
+
+ - Multi user environment.
+ - Interaction with the OS through 4 serial consoles.
+ - Controlling QEMU state via monitor console.
+ - Configurable port forwarding.
+ - Access to host's file system over 9P.
+
+### Restrictions
+
+ - Application supports only AArch64 devices.
+ - Fixed amount of terminal sessions.
+ - Hardware acceleration like KVM is unsupported.
+ - Unprivileged user-mode networking only.
+
+***
+
+## User's Guide
+
+**Important**: this user's guide does not include information about
+"how to use shell" or "how to use Alpine Linux". If you are new for
+such topics, it is recommended to read [Bash Guide for Beginners](doc/bash-guide.html)
+and [Advanced Bash-Scripting Guide](doc/bash-advanced.html).
+
+ - [User interface](#user-interface)
+   - [Main menu](#main-menu)
+   - [Context menu](#context-menu)
+   - [Navigation drawer](#navigation-drawer)
+   - [Notification](#notification)
+   - [Extra keys row](#extra-keys-row)
+   - [Text input view](#text-input-view)
+ - [Getting started](#getting-started)
+   - [Terminal](#terminal)
+   - [Touch keyboard shortcuts](#touch-keyboard-shortcuts)
+   - [Settings](#settings)
+   - [Exiting from application](#exiting-from-application)
+
+***
+
+### User interface
+#### Main menu
+
+On application's cold start you will see a main menu. It allows to
+select a desired action you want to perform, for example launch
+virtual machine or open settings.
+
+<span style="display:block;text-align:center">
+  <img alt="Application menu screenshot" src="img/app_menu.png" style="width:90%;max-width:700px;">
+</span>
+
+Description for menu entries:
+
+ - **Launch**
+
+   Launch the virtual machine in normal mode.
+
+ - **Launch in sandbox mode**
+
+   Launch the virtual machine in "sandbox" mode. All file system
+   changes will not be saved in this mode.
+
+ - **Settings**
+
+   Open application's settings.
+
+ - **Help**
+
+   Show the help page you reading now.
+
+ - **Exit**
+
+   Exit the application.
+
+
+Besides the main menu there are five additional interface elements
+available: a [context menu](#context-menu), [navigation drawer](#navigation-drawer),
+[notification](#notification), [extra keys row](#extra-keys-row)
+and [text input view](#text-input-view). These additional elements
+become available when the virtual machine is running.
+
+#### Context menu
+
+The context menu can be shown by long pressing anywhere on the
+terminal. It provides menu entries for:
+
+ - Showing this help page.
+ - Choosing font and color scheme for styling the terminal.
+ - Selecting and pasting text.
+ - Sharing text from the terminal to other apps (e.g. email or SMS).
+ - Resetting the terminal if it gets stuck.
+ - A setting to control whether screen should be always on.
+ - A setting to control whether back key should send ESC.
+ - A setting to control whether bell characters should be ignored.
+
+#### Navigation drawer
+
+The navigation drawer is revealed by swiping inwards from the left
+part of the screen.
+
+<span style="display:block;text-align:center">
+  <img alt="Navigation drawer screenshot" src="img/app_drawer.png" style="width:90%;max-width:700px;">
+</span>
+
+ 1. A list of sessions. Clicking on a session shows it in the
+    terminal while long pressing allows you to specify a session title.
+ 2. A button to toggle visibility of the touch keyboard. Long
+    press will toggle [extra keys row](#extra-keys-row) (3).
+
+#### Notification
+
+The notification shown while the Alpine Term is running, is available
+by pulling down the status bar.
+
+<span style="display:block;text-align:center">
+  <img alt="Notification screenshot" src="img/app_notification.png" style="width:90%;max-width:700px;">
+</span>
+
+Pressing the notification will open current terminal session. The
+notification may also be expanded by pinch-zooming or performing
+a single-finger glide to expose some actions:
+
+ 1. Immediately exit the application.
+ 2. Start wake lock to prevent device's CPU going into sleep mode.
+
+#### Extra keys row
+
+The extra keys row provides some keys frequently required in shell
+sessions.
+
+<span style="display:block;text-align:center">
+  <img alt="Extra keys row screenshot" src="img/extra_keys_row.png" style="width:90%;max-width:700px;">
+</span>
+
+It can be toggled by: long-press on keyboard button located in the
+[navigation drawer](#navigation-drawer), by using a **Volume Up+Q**
+or **Volume Up+K** key combinations.
+
+#### Text input view
+
+<span style="display:block;text-align:center">
+  <img alt="Text input view screenshot" src="img/alt_text_input.png" style="width:90%;max-width:700px;">
+</span>
+
+Terminal emulators usually do not support the advanced features of
+touch keyboards like autocorrection, prediction and swipe typing.
+To solve this, Alpine Term has a text input view where all these
+features work correctly. Text entered in it will get pasted to the
+terminal. To access the text input view, swipe the [extra keys row](#extra-keys-row)
+to the left side.
+
+***
+
+### Getting started
+#### Terminal
+
+Terminal is the important part of the Alpine Term application.
+It provides a text-based interface to a shell of the operating
+system running inside the virtual machine.
+
+When terminal is active, it is sensitive to taps and gestures.
+For example, pinch-zooming will change text size and short tap
+will act as mouse click. Long tap will toggle text selection
+and [context menu](#context-menu).
+
+<span style="display:block;text-align:center">
+  <img alt="QEMU session screenshot" src="img/qemu_session.png" style="width:90%;max-width:700px;">
+</span>
+
+Alpine Term uses a fixed number of terminal sessions, each of
+them has its own purpose. You cannot add new or remove existing
+ones.
+
+The first four sessions are serial consoles (ttyS0-ttyS3) which
+you can use to access the shell.
+
+**Important**: serial consoles do not support automatic window
+resizing. Unfortunately this issue comes from the nature of
+serial console implementation and cannot be fixed. As workaround,
+it is suggested to call command '**resize**' once you changed the
+window size.
+
+The fifth session is a QEMU monitor. It gives you full control
+over QEMU's internal state. If you want to learn about how to
+use QEMU monitor, read the [QEMU documentation](doc/qemu-doc.html#pcsys_005fmonitor).
+
+<span style="display:block;text-align:center">
+  <img alt="QEMU monitor screenshot" src="img/qemu_monitor.png" style="width:90%;max-width:700px;">
+</span>
+
+#### Touch keyboard shortcuts
+
+Use of keys like Alt, Ctrl, Esc is necessary for working with
+many command line applications. Most of the Android touch
+keyboards do not include these keys.
+
+The result of using **Ctrl** in combination with a key depends
+on which program is used, but for many command line tools the
+following shortcuts work:
+
+ - **Ctrl+A** → Move cursor to the beginning of line
+ - **Ctrl+C** → Abort (send SIGINT to) current process
+ - **Ctrl+D** → Logout of a terminal session
+ - **Ctrl+E** → Move cursor to the end of line
+ - **Ctrl+K** → Delete from cursor to the end of line
+ - **Ctrl+L** → Clear the terminal
+ - **Ctrl+Z** → Suspend (send SIGTSTP to) current process
+
+**Volume Down** key used as Ctrl while the **Volume Up** key
+is used to to produce certain input on these key combinations:
+
+ - **Volume Up+.** → Ctrl+\\ (SIGQUIT)
+ - **Volume Up+1** → F1 (and **Volume Up+2** → F2, etc)
+ - **Volume Up+0** → F10
+ - **Volume Up+A** → Left arrow key
+ - **Volume Up+B** → Alt+B, back a word when using readline
+ - **Volume Up+D** → Right arrow key
+ - **Volume Up+E** → Escape key
+ - **Volume Up+F** → Alt+F, forward a word when using readline
+ - **Volume Up+H** → ~ (the tilde character)
+ - **Volume Up+K** → Alias for **Volume Up+Q**
+ - **Volume Up+L** → | (the pipe character)
+ - **Volume Up+N** → Page Down
+ - **Volume Up+P** → Page Up
+ - **Volume Up+Q** → Toggle extra keys row
+ - **Volume Up+S** → Down arrow key
+ - **Volume Up+T** → Tab key
+ - **Volume Up+U** → _ (the underscore character)
+ - **Volume Up+V** → Show the volume control
+ - **Volume Up+W** → Up arrow key
+ - **Volume Up+X** → Alt+X
+
+#### Settings
+
+You can enter settings via [main menu](#main-menu).
+
+<span style="display:block;text-align:center">
+  <img alt="Application settings screenshot" src="img/app_settings.png" style="width:90%;max-width:700px;">
+</span>
+
+These settings affect options passed to the QEMU. Before changing
+something, please read description of the each option carefully
+and understand what you are actually doing. Default values should
+be good for the most cases.
+
+#### Exiting from application
+
+Alpine Term is not a regular application. Unless you are in a "sandbox"
+mode, you cannot safely just close application. There a virtual machine
+running inside, so before closing the application, it is highly recommended
+to shut down the virtual machine by either command '**poweroff**' in
+serial console or command '**system_powerdown**' in QEMU monitor.
+
+Such measures required to prevent loss of data remaining in the buffers.
+If you forget to do graceful shutdown, you may get a file system left
+in inconsistent state or even get some files corrupted or lost (worst cases).
+
+***
+
+<p style="text-align:center;"><font size="1dp">by Leonid Plyushch (@xeffyr)</font></p>

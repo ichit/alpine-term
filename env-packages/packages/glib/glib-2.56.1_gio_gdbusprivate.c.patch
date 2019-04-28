@@ -1,0 +1,45 @@
+diff -uNr glib-2.56.1/gio/gdbusprivate.c glib-2.56.1.mod/gio/gdbusprivate.c
+--- glib-2.56.1/gio/gdbusprivate.c	2018-04-07 05:10:22.000000000 +0300
++++ glib-2.56.1.mod/gio/gdbusprivate.c	2018-08-14 17:11:38.177462056 +0300
+@@ -2049,6 +2049,27 @@
+ 
+ /* ---------------------------------------------------------------------------------------------------- */
+ 
++
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
++#endif
++
++
++
+ gchar *
+ _g_dbus_get_machine_id (GError **error)
+ {
+@@ -2098,11 +2119,11 @@
+   /* TODO: use PACKAGE_LOCALSTATEDIR ? */
+   ret = NULL;
+   first_error = NULL;
+-  if (!g_file_get_contents ("/var/lib/dbus/machine-id",
++  if (!g_file_get_contents (__prepend_prefix("/var/lib/dbus/machine-id"),
+                             &ret,
+                             NULL,
+                             &first_error) &&
+-      !g_file_get_contents ("/etc/machine-id",
++      !g_file_get_contents (__prepend_prefix("/etc/machine-id"),
+                             &ret,
+                             NULL,
+                             NULL))

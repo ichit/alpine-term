@@ -1,0 +1,18 @@
+diff -uNr busybox-1.28.4/networking/ifconfig.c busybox-1.28.4.mod/networking/ifconfig.c
+--- busybox-1.28.4/networking/ifconfig.c	2018-04-01 14:03:43.000000000 +0300
++++ busybox-1.28.4.mod/networking/ifconfig.c	2018-07-23 13:16:44.546495847 +0300
+@@ -128,14 +128,6 @@
+ # define IFF_DYNAMIC     0x8000	/* dialup device with changing addresses */
+ #endif
+ 
+-#if ENABLE_FEATURE_IPV6
+-struct in6_ifreq {
+-	struct in6_addr ifr6_addr;
+-	uint32_t ifr6_prefixlen;
+-	int ifr6_ifindex;
+-};
+-#endif
+-
+ /*
+  * Here are the bit masks for the "flags" member of struct options below.
+  * N_ signifies no arg prefix; M_ signifies arg prefixed by '-'.

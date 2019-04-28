@@ -1,0 +1,12 @@
+diff -uNr bash-4.4/bashline.c bash-4.4.mod/bashline.c
+--- bash-4.4/bashline.c	2016-08-06 04:44:05.000000000 +0300
++++ bash-4.4.mod/bashline.c	2019-04-24 20:27:48.278910500 +0300
+@@ -721,7 +721,7 @@
+   if (temp == 0)
+     temp = get_string_value ("hostname_completion_file");
+   if (temp == 0)
+-    temp = DEFAULT_HOSTS_FILE;
++    temp = "/system/etc/hosts";
+ 
+   snarf_hosts_from_file (temp);
+ 

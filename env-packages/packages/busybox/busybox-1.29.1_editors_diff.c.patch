@@ -1,0 +1,12 @@
+diff -uNr busybox-1.29.1/editors/diff.c busybox-1.29.1.mod/editors/diff.c
+--- busybox-1.29.1/editors/diff.c	2018-07-02 14:23:06.000000000 +0300
++++ busybox-1.29.1.mod/editors/diff.c	2018-07-31 14:48:08.160840170 +0300
+@@ -730,7 +730,7 @@
+ 		 * When we meet non-seekable file, we must make a temp copy.
+ 		 */
+ 		if (lseek(fd, 0, SEEK_SET) == -1 && errno == ESPIPE) {
+-			char name[] = "/tmp/difXXXXXX";
++			char name[] = "@TERMUX_PREFIX@/tmp/difXXXXXX";
+ 			int fd_tmp = xmkstemp(name);
+ 
+ 			unlink(name);

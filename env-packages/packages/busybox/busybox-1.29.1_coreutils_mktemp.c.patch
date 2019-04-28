@@ -1,0 +1,21 @@
+diff -uNr busybox-1.29.1/coreutils/mktemp.c busybox-1.29.1.mod/coreutils/mktemp.c
+--- busybox-1.29.1/coreutils/mktemp.c	2018-07-02 14:23:06.000000000 +0300
++++ busybox-1.29.1.mod/coreutils/mktemp.c	2018-07-31 14:48:08.157506821 +0300
+@@ -50,7 +50,7 @@
+ //usage:     "\n	-p DIR	Use DIR as a base directory (implies -t)"
+ //usage:     "\n	-u	Do not create anything; print a name"
+ //usage:     "\n"
+-//usage:     "\nBase directory is: -p DIR, else $TMPDIR, else /tmp"
++//usage:     "\nBase directory is: -p DIR, else $TMPDIR, else @TERMUX_PREFIX@/tmp"
+ //usage:
+ //usage:#define mktemp_example_usage
+ //usage:       "$ mktemp /tmp/temp.XXXXXX\n"
+@@ -76,7 +76,7 @@
+ 
+ 	path = getenv("TMPDIR");
+ 	if (!path || path[0] == '\0')
+-		path = "/tmp";
++		path = "@TERMUX_PREFIX@/tmp";
+ 
+ 	opts = getopt32(argv, "^" "dqtp:u" "\0" "?1"/*1 arg max*/, &path);
+ 

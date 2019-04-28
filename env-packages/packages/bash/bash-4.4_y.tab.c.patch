@@ -1,0 +1,11 @@
+diff -uNr bash-4.4/y.tab.c bash-4.4.mod/y.tab.c
+--- bash-4.4/y.tab.c	2016-09-11 18:32:05.000000000 +0300
++++ bash-4.4.mod/y.tab.c	2019-04-24 20:23:48.908298208 +0300
+@@ -177,7 +177,6 @@
+ extern int bash_input_fd_changed;
+ #endif
+ 
+-extern int errno;
+ /* **************************************************************** */
+ /*								    */
+ /*		    "Forward" declarations			    */

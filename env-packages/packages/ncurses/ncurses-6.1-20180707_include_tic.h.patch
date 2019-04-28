@@ -1,0 +1,32 @@
+diff -uNr ncurses-6.1-20180707/include/tic.h ncurses-6.1-20180707.mod/include/tic.h
+--- ncurses-6.1-20180707/include/tic.h	2018-05-06 03:19:34.000000000 +0300
++++ ncurses-6.1-20180707.mod/include/tic.h	2018-08-14 14:58:14.486011363 +0300
+@@ -240,10 +240,26 @@
+ /* this is a documented limitation of terminfo */
+ #define MAX_TERMINFO_LENGTH	4096
+ 
+-#ifndef TERMINFO
+-#define TERMINFO "/usr/share/terminfo"
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
+ #endif
+ 
++#define TERMINFO __prepend_prefix("/share/terminfo")
++
+ #ifdef NCURSES_TERM_ENTRY_H_incl
+ 
+ /*

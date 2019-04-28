@@ -1,0 +1,44 @@
+diff -uNr bash-4.4/shell.c bash-4.4.mod/shell.c
+--- bash-4.4/shell.c	2016-05-06 18:23:43.000000000 +0300
++++ bash-4.4.mod/shell.c	2019-04-24 20:34:16.742185502 +0300
+@@ -1121,20 +1121,6 @@
+     {
+       /* We don't execute .bashrc for login shells. */
+       no_rc++;
+-
+-      /* Execute /etc/profile and one of the personal login shell
+-	 initialization files. */
+-      if (no_profile == 0)
+-	{
+-	  maybe_execute_file (SYS_PROFILE, 1);
+-
+-	  if (act_like_sh)	/* sh */
+-	    maybe_execute_file ("~/.profile", 1);
+-	  else if ((maybe_execute_file ("~/.bash_profile", 1) == 0) &&
+-		   (maybe_execute_file ("~/.bash_login", 1) == 0))	/* bash */
+-	    maybe_execute_file ("~/.profile", 1);
+-	}
+-
+       sourced_login = 1;
+     }
+ 
+@@ -1157,19 +1143,6 @@
+ 	{
+ 	  /* We don't execute .bashrc for login shells. */
+ 	  no_rc++;
+-
+-	  /* Execute /etc/profile and one of the personal login shell
+-	     initialization files. */
+-	  if (no_profile == 0)
+-	    {
+-	      maybe_execute_file (SYS_PROFILE, 1);
+-
+-	      if (act_like_sh)	/* sh */
+-		maybe_execute_file ("~/.profile", 1);
+-	      else if ((maybe_execute_file ("~/.bash_profile", 1) == 0) &&
+-		       (maybe_execute_file ("~/.bash_login", 1) == 0))	/* bash */
+-		maybe_execute_file ("~/.profile", 1);
+-	    }
+ 	}
+ 
+       /* bash */

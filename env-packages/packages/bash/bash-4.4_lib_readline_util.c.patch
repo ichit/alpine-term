@@ -1,0 +1,39 @@
+diff -uNr bash-4.4/lib/readline/util.c bash-4.4.mod/lib/readline/util.c
+--- bash-4.4/lib/readline/util.c	2015-12-30 21:09:27.000000000 +0200
++++ bash-4.4.mod/lib/readline/util.c	2019-04-24 20:23:48.898298136 +0300
+@@ -511,6 +511,26 @@
+   va_end (args);
+ }
+ 
++
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
++#endif
++
++
+ int
+ _rl_tropen ()
+ {
+@@ -523,7 +543,7 @@
+   if (x == 0)
+     x = ".";
+ #else
+-  x = "/var/tmp";
++  x = __prepend_prefix("/var/tmp");
+ #endif
+   sprintf (fnbuf, "%s/rltrace.%ld", x, (long)getpid());
+   unlink(fnbuf);

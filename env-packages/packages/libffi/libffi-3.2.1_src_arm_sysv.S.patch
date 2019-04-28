@@ -1,0 +1,12 @@
+diff -uNr libffi-3.2.1/src/arm/sysv.S libffi-3.2.1.mod/src/arm/sysv.S
+--- libffi-3.2.1/src/arm/sysv.S	2014-11-08 14:47:24.000000000 +0200
++++ libffi-3.2.1.mod/src/arm/sysv.S	2018-07-23 22:02:52.051467375 +0300
+@@ -396,7 +396,7 @@
+ 	beq	LSYM(Lepilogue_vfp)
+ 
+ 	cmp	r3, #FFI_TYPE_SINT64
+-	stmeqia	r2, {r0, r1}
++	stmiaeq	r2, {r0, r1}
+ 	beq	LSYM(Lepilogue_vfp)
+ 
+ 	cmp	r3, #FFI_TYPE_FLOAT

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="application_name">Alpine Term</string>
+
+    <!-- Common -->
+    <string name="cancel_label">Cancel</string>
+    <string name="exit_label">Exit</string>
+    <string name="ok_label">OK</string>
+
+    <!-- Installer dialog -->
+    <string name="installer_toast_update_failure_msg">Failed to start environment update</string>
+    <string name="installer_progress_message">Updating environment…\nBe patient…</string>
+    <string name="installer_error_title">Installation failed</string>
+    <string name="installer_error_body">Application was unable to install the new environment.</string>
+    <string name="installer_error_try_again_button">Try again</string>
+
+    <!-- Shared storage permission denial dialog -->
+    <string name="storage_permission_denied_title">Storage permission denial</string>
+    <string name="storage_permission_denied_body">You just have denied shared storage access permission, but the application cannot work without it.\n\nIf you do not allow access to your storage, please, uninstall the application.\n\nSorry.</string>
+
+    <!-- Launcher dialog -->
+    <string name="launcher_title">Menu</string>
+    <string name="launcher_start_default">Launch</string>
+    <string name="launcher_start_sandbox">Launch in sandbox mode</string>
+    <string name="launcher_open_settings">Settings</string>
+    <string name="launcher_open_help">Help</string>
+
+    <!-- Context menu: main -->
+    <string name="menu_copy_text">Copy</string>
+    <string name="menu_paste_text">Paste</string>
+    <string name="menu_more">More…</string>
+
+    <!-- Context menu: more -->
+    <string name="menu_show_help">Show help</string>
+    <string name="menu_console_style">Terminal styling</string>
+    <string name="menu_select_url">Select URL</string>
+    <string name="menu_share_transcript">Share transcript</string>
+    <string name="menu_reset_terminal">Reset</string>
+    <string name="menu_toggle_keep_screen_on">Keep screen on</string>
+    <string name="menu_toggle_back_is_escape">Back key sends escape</string>
+    <string name="menu_toggle_ignore_bell">Ignore bell character</string>
+
+    <!-- Context menu: Fonts and Colors -->
+    <string name="style_color_prompt">Choose color</string>
+    <string name="style_font_prompt">Choose font</string>
+    <string name="style_toast_install_failed">Failed to update terminal styling</string>
+
+    <!-- Context menu: Select URL dialog -->
+    <string name="select_url_dialog_title">Click URL to copy or long press to open</string>
+    <string name="select_url_toast_no_found">No URLs found in the terminal</string>
+    <string name="select_url_toast_copied_to_clipboard">URL copied to clipboard</string>
+    <string name="select_url_toast_cannot_open">Cannot open this URL</string>
+
+    <!-- Context menu: Share transcript prompt -->
+    <string name="share_transcript_file_name">alpine-term_transcript.txt</string>
+    <string name="share_transcript_chooser_title">Send console transcript to:</string>
+
+    <!-- Context menu: Reset terminal toast message -->
+    <string name="reset_toast_notification">Terminal reset</string>
+
+    <!-- Drawer -->
+    <string name="button_toggle_soft_keyboard">Toggle keyboard</string>
+
+    <!-- Drawer: Rename session dialog -->
+    <string name="session_rename_title">Set session name</string>
+    <string name="session_rename_positive_button">Set</string>
+
+    <!-- Notification -->
+    <string name="notification_action_wake_lock">Acquire wakelock</string>
+    <string name="notification_action_wake_unlock">Release wakelock</string>
+
+    <!-- Preference labels -->
+    <string name="pref_cat_qemu">QEMU</string>
+    <string name="qemu_ram_title">RAM</string>
+    <string name="qemu_ram_desc">Maximal amount of RAM that can be used by QEMU virtual machine.\n\n* Too high values may result in application or device crash.</string>
+    <string name="qemu_hdd1_path_title">Primary hard drive</string>
+    <string name="qemu_hdd1_path_desc">Path to the disk image that will be used as primary hard drive. If the file is not exist, the snapshot image with the Alpine Linux will be created.\n\n* This is a default boot device.\n\n* Depending on usage, the image file can grow up to several gigabytes.</string>
+    <string name="qemu_hdd1_path_hint">Leave empty to use default.</string>
+    <string name="qemu_hdd2_path_title">Secondary hard drive</string>
+    <string name="qemu_hdd2_path_desc">Path to the disk image that will be used as secondary drive.\n\n* Can be selected as boot device from bios menu.\n\n* Depending on usage, the image file can grow up to several gigabytes.</string>
+    <string name="qemu_hdd2_path_hint">Leave empty to disable.</string>
+    <string name="qemu_cdrom_path_title">CD-ROM</string>
+    <string name="qemu_cdrom_path_desc">Path to the disk image that will be used as CD-ROM.\n\n* Can be selected as boot device from bios menu.</string>
+    <string name="qemu_cdrom_path_hint">Leave empty to disable.</string>
+    <string name="qemu_upstream_dns_title">Upstream DNS</string>
+    <string name="qemu_upstream_dns_desc">A DNS server to which all queries from QEMU will be forwarded.\n\n* Guest OS should be configured to use QEMU\'s internal DNS (10.0.2.3) otherwise this option will not have any effect. Usually, DHCP configures this automatically.</string>
+    <string name="qemu_upstream_dns_hint">1.1.1.1</string>
+    <string name="qemu_exposed_ports_title">Exposed ports</string>
+    <string name="qemu_exposed_ports_desc">A list of port forwarding rules. Each rule has the following format:\n\n{proto}:{external port}:{internal port}\n\nYou can specify multiple rules by separating them with commas.\n\n* External ports lower than 1024 are not allowed.</string>
+    <string name="qemu_exposed_ports_hint">tcp:8080:80, udp:5353:53, etc…</string>
+
+    <!-- Preference dialogs -->
+    <string name="pref_dialog_invalid_file_path_title">Invalid file path specified</string>
+    <string name="pref_dialog_invalid_file_path_body">One or more components are inaccessible at specified path.\n\nMake sure that file path is correct and you have write permissions.\n\nChanges are discarded.</string>
+    <string name="pref_dialog_invalid_dns_ip_title">Invalid DNS IP</string>
+    <string name="pref_dialog_invalid_dns_ip_body">You have entered an invalid IPv4 address of the DNS server.\n\nSuggested ones are:\n\n* 1.1.1.1\n* 4.2.2.1\n* 8.8.8.8\n* 206.67.220.220\n\nChanges are discarded.</string>
+    <string name="pref_dialog_invalid_port_title">Invalid port number specified</string>
+    <string name="pref_dialog_invalid_port_body">You have entered invalid port number.\n\nMinimal allowed port is %1$d and maximal is %2$d.\n\nChanges are discarded.</string>
+    <string name="pref_dialog_fwd_invalid_port_title">Forwarding rule error</string>
+    <string name="pref_dialog_fwd_invalid_rule">Rule: %s\n\nSyntax error.\n\nRule should be defined in the following format:\n\n(tcp|udp):{1024–65535}:{1–65535}\n\nMultiple rules should be separated by commas.</string>
+    <string name="pref_dialog_fwd_invalid_external_port_body">Rule: %s\n\nYou have specified an invalid external port value.\n\nAllowed range for external port is 1024–65535.</string>
+    <string name="pref_dialog_fwd_invalid_internal_port_body">Rule: %s\n\nYou have specified an invalid internal port value.\n\nAllowed range for internal port is 1–65535.</string>
+
+    <!-- Preference keys -->
+    <string name="qemu_ram_key">qemu_ram</string>
+    <string name="qemu_hdd1_path_key">qemu_hdd1_path</string>
+    <string name="qemu_hdd2_path_key">qemu_hdd2_path</string>
+    <string name="qemu_cdrom_path_key">qemu_cdrom_path</string>
+    <string name="qemu_upstream_dns_key">qemu_upstream_dns</string>
+    <string name="qemu_exposed_ports_key">qemu_exposed_ports</string>
+</resources>

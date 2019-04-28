@@ -1,0 +1,12 @@
+diff -uNr libffi-3.2.1/include/Makefile.in libffi-3.2.1.mod/include/Makefile.in
+--- libffi-3.2.1/include/Makefile.in	2014-11-12 13:59:58.000000000 +0200
++++ libffi-3.2.1.mod/include/Makefile.in	2018-07-23 22:02:52.048134019 +0300
+@@ -314,7 +314,7 @@
+ AUTOMAKE_OPTIONS = foreign
+ DISTCLEANFILES = ffitarget.h
+ EXTRA_DIST = ffi.h.in ffi_common.h
+-includesdir = $(libdir)/@PACKAGE_NAME@-@PACKAGE_VERSION@/include
++includesdir = $(includedir)
+ nodist_includes_HEADERS = ffi.h ffitarget.h
+ all: all-am
+ 

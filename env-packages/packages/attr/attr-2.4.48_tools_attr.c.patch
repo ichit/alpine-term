@@ -1,0 +1,11 @@
+diff -uNr attr-2.4.48/tools/attr.c attr-2.4.48.mod/tools/attr.c
+--- attr-2.4.48/tools/attr.c	2018-01-21 07:00:44.000000000 +0200
++++ attr-2.4.48.mod/tools/attr.c	2018-07-24 16:40:50.738565930 +0300
+@@ -28,6 +28,7 @@
+ #include <errno.h>
+ #include <string.h>
+ #include <locale.h>
++#include <libgen.h> /* for basename(3) */
+ 
+ #include <attr/attributes.h>
+ 

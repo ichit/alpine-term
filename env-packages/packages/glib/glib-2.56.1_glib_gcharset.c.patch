@@ -1,0 +1,39 @@
+diff -uNr glib-2.56.1/glib/gcharset.c glib-2.56.1.mod/glib/gcharset.c
+--- glib-2.56.1/glib/gcharset.c	2018-04-07 05:10:22.000000000 +0300
++++ glib-2.56.1.mod/glib/gcharset.c	2018-08-14 17:06:13.841887804 +0300
+@@ -286,6 +286,26 @@
+ 
+ #endif
+ 
++
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
++#endif
++
++
+ static char *
+ unalias_lang (char *lang)
+ {
+@@ -297,7 +317,7 @@
+   if (g_once_init_enter (&alias_table))
+     {
+       GHashTable *table = g_hash_table_new (g_str_hash, g_str_equal);
+-      read_aliases ("/usr/share/locale/locale.alias", table);
++      read_aliases (__prepend_prefix("/share/locale/locale.alias"), table);
+       g_once_init_leave (&alias_table, table);
+     }
+ 

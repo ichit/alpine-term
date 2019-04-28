@@ -1,0 +1,101 @@
+diff --git a/sysroot/usr/include/stdio.h b/usr/include/stdio.h
+index 857bee3..25af36c 100644
+--- a/sysroot/usr/include/stdio.h
++++ b/usr/include/stdio.h
+@@ -44,6 +44,9 @@
+ #include <stdarg.h>
+ #include <stddef.h>
+ 
++#include <string.h>            /* For strcpy(3) used by ctermid() */
++#include <asm/fcntl.h>         /* For O_RDWR and other O_* constants */
++
+ #include <bits/seek_constants.h>
+ 
+ #if __ANDROID_API__ < __ANDROID_API_N__
+@@ -165,7 +168,27 @@ int vsprintf(char* __s, const char* __fmt, va_list __args)
+     __printflike(2, 0) __warnattr_strict("vsprintf is often misused; please use vsnprintf");
+ char* tmpnam(char* __s)
+     __warnattr("tempnam is unsafe, use mkstemp or tmpfile instead");
+-#define P_tmpdir "/tmp/" /* deprecated */
++
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...) __printflike(2, 3);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++	char *_new_path;
++	char *_env_prefix = getenv("PREFIX");
++
++	if (_env_prefix) {
++		asprintf(&_new_path, "%s%s", _env_prefix, path);
++		return _new_path;
++	} else {
++		asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++		return _new_path;
++	}
++}
++#endif
++
++#define P_tmpdir __prepend_prefix("/tmp/") /* deprecated */
++
+ char* tempnam(const char* __dir, const char* __prefix)
+     __warnattr("tempnam is unsafe, use mkstemp or tmpfile instead");
+ 
+@@ -241,8 +264,6 @@ FILE* freopen(const char* __path, const char* __mode, FILE* __fp);
+ FILE* freopen64(const char* __path, const char* __mode, FILE* __fp) __INTRODUCED_IN(24);
+ #endif /* __ANDROID_API__ >= 24 */
+ 
+-FILE* tmpfile(void);
+-
+ #if __ANDROID_API__ >= 24
+ FILE* tmpfile64(void) __INTRODUCED_IN(24);
+ #endif /* __ANDROID_API__ >= 24 */
+@@ -256,10 +277,15 @@ int vsscanf(const char* __s, const char* __fmt, va_list __args) __scanflike(2, 0
+ 
+ #define L_ctermid 1024 /* size for ctermid() */
+ 
+-#if __ANDROID_API__ >= 26
+-char* ctermid(char* __buf) __INTRODUCED_IN(26);
+-#endif /* __ANDROID_API__ >= 26 */
++/* Needed by gnulibs freading(). */
++#define __sferror(p)    (((p)->_flags & __SERR) != 0)
+ 
++/* Used by perl, fish, and others. */
++static __inline__ char* ctermid(char* s) {
++	if (s == 0) return (char*) "/dev/tty";
++	strcpy(s, "/dev/tty");
++	return s;
++}
+ 
+ FILE* fdopen(int __fd, const char* __mode);
+ int fileno(FILE* __fp);
+@@ -328,6 +354,29 @@ char* fgets_unlocked(char* __buf, int __size, FILE* __fp) __INTRODUCED_IN(28);
+ #include <bits/fortify/stdio.h>
+ #endif
+ 
++int open(const char*, int, ...);
++extern pid_t getpid();
++extern int unlink(const char*);
++void free(void* p);
++uint32_t arc4random(void);
++static __inline__ FILE* tmpfile() {
++	int p = getpid();
++	char* path;
++	int i;
++	for (i = 0; i < 100; i++) {
++		unsigned int r = arc4random();
++		if (asprintf(&path, __prepend_prefix("/tmp/tmpfile.%d-%u"), p, r) == -1) return NULL;
++		int fd = open(path, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, 0600);
++		free(path);
++		if (fd >= 0) {
++			FILE* result = fdopen(fd, "w+");
++			unlink(path);
++			return result;
++		}
++	}
++	return NULL;
++}
++
+ __END_DECLS
+ 
+ #endif

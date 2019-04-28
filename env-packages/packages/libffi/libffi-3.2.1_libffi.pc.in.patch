@@ -1,0 +1,12 @@
+diff -uNr libffi-3.2.1/libffi.pc.in libffi-3.2.1.mod/libffi.pc.in
+--- libffi-3.2.1/libffi.pc.in	2014-11-08 14:47:24.000000000 +0200
++++ libffi-3.2.1.mod/libffi.pc.in	2018-07-23 22:02:52.048134019 +0300
+@@ -2,7 +2,7 @@
+ exec_prefix=@exec_prefix@
+ libdir=@libdir@
+ toolexeclibdir=@toolexeclibdir@
+-includedir=${libdir}/@PACKAGE_NAME@-@PACKAGE_VERSION@/include
++includedir=@includedir@
+ 
+ Name: @PACKAGE_NAME@
+ Description: Library supporting Foreign Function Interfaces

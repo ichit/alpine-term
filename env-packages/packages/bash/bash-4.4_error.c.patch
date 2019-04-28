@@ -1,0 +1,39 @@
+diff -uNr bash-4.4/error.c bash-4.4.mod/error.c
+--- bash-4.4/error.c	2015-10-20 16:46:18.000000000 +0300
++++ bash-4.4.mod/error.c	2019-04-24 20:23:48.890298078 +0300
+@@ -416,6 +416,26 @@
+   fflush(stderr);
+ }
+ 
++
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
++#endif
++
++
+ /* A trace function for silent debugging -- doesn't require a control
+    terminal. */
+ void
+@@ -431,7 +451,7 @@
+   static FILE *tracefp = (FILE *)NULL;
+ 
+   if (tracefp == NULL)
+-    tracefp = fopen("/tmp/bash-trace.log", "a+");
++    tracefp = fopen(__prepend_prefix("/tmp/bash-trace.log"), "a+");
+ 
+   if (tracefp == NULL)
+     tracefp = stderr;

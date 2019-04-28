@@ -1,0 +1,22 @@
+diff -uNr busybox-1.29.1/networking/hostname.c busybox-1.29.1.mod/networking/hostname.c
+--- busybox-1.29.1/networking/hostname.c	2018-07-02 14:23:06.000000000 +0300
++++ busybox-1.29.1.mod/networking/hostname.c	2018-07-31 14:48:08.174173569 +0300
+@@ -58,11 +58,18 @@
+ 		}
+ 		if (ENABLE_FEATURE_CLEAN_UP)
+ 			config_close(parser);
++#ifdef __ANDROID__
++	} else {
++		/* sethostname() is not available on Android pre android-23 and not allowed anyway. */
++		bb_error_msg_and_die("can't set hostname: Operation not permitted");
++	}
++#else
+ 	} else if (sethostname(s, strlen(s))) {
+ //		if (errno == EPERM)
+ //			bb_error_msg_and_die(bb_msg_perm_denied_are_you_root);
+ 		bb_perror_msg_and_die("sethostname");
+ 	}
++#endif
+ }
+ 
+ /* Manpage circa 2009:

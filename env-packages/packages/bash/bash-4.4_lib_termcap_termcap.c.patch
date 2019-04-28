@@ -1,0 +1,38 @@
+diff -uNr bash-4.4/lib/termcap/termcap.c bash-4.4.mod/lib/termcap/termcap.c
+--- bash-4.4/lib/termcap/termcap.c	2015-08-06 17:17:08.000000000 +0300
++++ bash-4.4.mod/lib/termcap/termcap.c	2019-04-24 21:16:09.394188736 +0300
+@@ -102,8 +102,23 @@
+ 
+ #include "ltcap.h"
+ 
+-#ifndef TERMCAP_FILE
+-#define TERMCAP_FILE "/etc/termcap"
++
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
+ #endif
+ 
+ #ifndef emacs
+@@ -523,7 +538,7 @@
+     }
+ 
+   if (!termcap_name || !filep)
+-    termcap_name = TERMCAP_FILE;
++    termcap_name = __prepend_prefix("/etc/termcap");
+ 
+   /* Here we know we must search a file and termcap_name has its name.  */
+ 

@@ -1,0 +1,69 @@
+diff -uNr ncurses-6.1-20180707/progs/tic.c ncurses-6.1-20180707.mod/progs/tic.c
+--- ncurses-6.1-20180707/progs/tic.c	2018-03-18 02:05:10.000000000 +0200
++++ ncurses-6.1-20180707.mod/progs/tic.c	2018-08-14 14:55:39.958412162 +0300
+@@ -381,12 +381,30 @@
+     return dst;
+ }
+ 
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
++#endif
++
+ static FILE *
+ open_tempfile(char *filename)
+ {
+     FILE *result = 0;
+ 
+-    _nc_STRCPY(filename, "/tmp/XXXXXX", PATH_MAX);
++    _nc_STRCPY(filename, __prepend_prefix("/tmp/XXXXXX"), PATH_MAX);
+ #if HAVE_MKSTEMP
+     {
+ 	int oldmask = (int) umask(077);
+@@ -674,6 +692,24 @@
+     *target = (*target * 10) + (source - '0');
+ }
+ 
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
++#endif
++
+ int
+ main(int argc, char *argv[])
+ {
+@@ -900,7 +936,7 @@
+     } else {
+ 	if (infodump == TRUE) {
+ 	    /* captoinfo's no-argument case */
+-	    source_file = "/etc/termcap";
++	    source_file = __prepend_prefix("/etc/termcap");
+ 	    if ((termcap = getenv("TERMCAP")) != 0
+ 		&& (namelst = make_namelist(getenv("TERM"))) != 0) {
+ 		if (access(termcap, F_OK) == 0) {

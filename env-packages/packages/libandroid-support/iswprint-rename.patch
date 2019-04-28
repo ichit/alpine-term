@@ -1,0 +1,78 @@
+This patch is required to allow static linking with Bionic libc.
+
+diff -uNr libandroid-support-22/src/musl-ctype/iswctype.c libandroid-support-22.mod/src/musl-ctype/iswctype.c
+--- libandroid-support-22/src/musl-ctype/iswctype.c	2017-08-17 01:28:27.000000000 +0300
++++ libandroid-support-22.mod/src/musl-ctype/iswctype.c	2018-12-29 02:27:22.783086509 +0200
+@@ -15,6 +15,17 @@
+ #define WCTYPE_UPPER  11
+ #define WCTYPE_XDIGIT 12
+ 
++static int termux_iswprint(wint_t wc)
++{
++    if (wc < 0xffU)
++        return (wc+1 & 0x7f) >= 0x21;
++    if (wc < 0x2028U || wc-0x202aU < 0xd800-0x202a || wc-0xe000U < 0xfff9-0xe000)
++        return 1;
++    if (wc-0xfffcU > 0x10ffff-0xfffc || (wc&0xfffe)==0xfffe)
++        return 0;
++    return 1;
++}
++
+ int iswctype(wint_t wc, wctype_t type)
+ {
+ 	switch (type) {
+@@ -33,7 +44,7 @@
+ 	case WCTYPE_LOWER:
+ 		return iswlower(wc);
+ 	case WCTYPE_PRINT:
+-		return iswprint(wc);
++		return termux_iswprint(wc);
+ 	case WCTYPE_PUNCT:
+ 		return iswpunct(wc);
+ 	case WCTYPE_SPACE:
+diff -uNr libandroid-support-22/src/musl-ctype/iswgraph.c libandroid-support-22.mod/src/musl-ctype/iswgraph.c
+--- libandroid-support-22/src/musl-ctype/iswgraph.c	2017-08-17 01:28:27.000000000 +0300
++++ libandroid-support-22.mod/src/musl-ctype/iswgraph.c	2018-12-29 02:27:50.462252293 +0200
+@@ -1,7 +1,18 @@
+ #include <wctype.h>
+ 
++static int termux_iswprint(wint_t wc)
++{
++    if (wc < 0xffU)
++        return (wc+1 & 0x7f) >= 0x21;
++    if (wc < 0x2028U || wc-0x202aU < 0xd800-0x202a || wc-0xe000U < 0xfff9-0xe000)
++        return 1;
++    if (wc-0xfffcU > 0x10ffff-0xfffc || (wc&0xfffe)==0xfffe)
++        return 0;
++    return 1;
++}
++
+ int iswgraph(wint_t wc)
+ {
+ 	/* ISO C defines this function as: */
+-	return !iswspace(wc) && iswprint(wc);
++	return !iswspace(wc) && termux_iswprint(wc);
+ }
+diff -uNr libandroid-support-22/src/musl-ctype/iswprint.c libandroid-support-22.mod/src/musl-ctype/iswprint.c
+--- libandroid-support-22/src/musl-ctype/iswprint.c	2017-08-17 01:28:27.000000000 +0300
++++ libandroid-support-22.mod/src/musl-ctype/iswprint.c	1970-01-01 03:00:00.000000000 +0300
+@@ -1,19 +0,0 @@
+-#include <wctype.h>
+-
+-/* Consider all legal codepoints as printable except for:
+- * - C0 and C1 control characters
+- * - U+2028 and U+2029 (line/para break)
+- * - U+FFF9 through U+FFFB (interlinear annotation controls)
+- * The following code is optimized heavily to make hot paths for the
+- * expected printable characters. */
+-
+-int iswprint(wint_t wc)
+-{
+-	if (wc < 0xffU)
+-		return (wc+1 & 0x7f) >= 0x21;
+-	if (wc < 0x2028U || wc-0x202aU < 0xd800-0x202a || wc-0xe000U < 0xfff9-0xe000)
+-		return 1;
+-	if (wc-0xfffcU > 0x10ffff-0xfffc || (wc&0xfffe)==0xfffe)
+-		return 0;
+-	return 1;
+-}

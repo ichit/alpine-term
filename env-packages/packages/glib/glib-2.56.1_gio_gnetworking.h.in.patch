@@ -1,0 +1,12 @@
+diff -uNr glib-2.56.1/gio/gnetworking.h.in glib-2.56.1.mod/gio/gnetworking.h.in
+--- glib-2.56.1/gio/gnetworking.h.in	2017-07-14 02:03:38.000000000 +0300
++++ glib-2.56.1.mod/gio/gnetworking.h.in	2018-08-14 17:04:57.114696129 +0300
+@@ -55,7 +55,7 @@
+ #endif
+ 
+ #ifndef _PATH_RESCONF
+-#define _PATH_RESCONF "/etc/resolv.conf"
++#define _PATH_RESCONF "@TERMUX_PREFIX@/etc/resolv.conf"
+ #endif
+ 
+ #ifndef CMSG_LEN

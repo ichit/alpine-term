@@ -1,0 +1,54 @@
+diff -uNr bash-4.4/lib/sh/tmpfile.c bash-4.4.mod/lib/sh/tmpfile.c
+--- bash-4.4/lib/sh/tmpfile.c	2016-08-11 18:05:58.000000000 +0300
++++ bash-4.4.mod/lib/sh/tmpfile.c	2019-04-24 21:13:05.696936213 +0300
+@@ -62,31 +62,31 @@
+ static int tmpnamelen = -1;
+ static unsigned long filenum = 1L;
+ 
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
++#endif
++
+ static char *
+ get_sys_tmpdir ()
+ {
+   if (sys_tmpdir)
+     return sys_tmpdir;
+ 
+-#ifdef P_tmpdir
+-  sys_tmpdir = P_tmpdir;
+-  if (file_iswdir (sys_tmpdir))
+-    return sys_tmpdir;
+-#endif
+-
+-  sys_tmpdir = "/tmp";
+-  if (file_iswdir (sys_tmpdir))
+-    return sys_tmpdir;
+-
+-  sys_tmpdir = "/var/tmp";
+-  if (file_iswdir (sys_tmpdir))
+-    return sys_tmpdir;
+-
+-  sys_tmpdir = "/usr/tmp";
+-  if (file_iswdir (sys_tmpdir))
+-    return sys_tmpdir;
+-
+-  sys_tmpdir = DEFAULT_TMPDIR;
++  sys_tmpdir = __prepend_prefix("/tmp");
+ 
+   return sys_tmpdir;
+ }

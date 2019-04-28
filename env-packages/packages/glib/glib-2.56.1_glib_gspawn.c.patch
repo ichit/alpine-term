@@ -1,0 +1,49 @@
+diff -uNr glib-2.56.1/glib/gspawn.c glib-2.56.1.mod/glib/gspawn.c
+--- glib-2.56.1/glib/gspawn.c	2018-03-12 18:23:37.000000000 +0200
++++ glib-2.56.1.mod/glib/gspawn.c	2018-08-14 17:07:06.592250053 +0300
+@@ -1664,6 +1664,27 @@
+   return FALSE;
+ }
+ 
++
++
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
++#endif
++
++
+ /* Based on execvp from GNU C Library */
+ 
+ static void
+@@ -1682,7 +1703,7 @@
+ 
+     new_argv = g_new0 (gchar*, argc + 2); /* /bin/sh and NULL */
+     
+-    new_argv[0] = (char *) "/bin/sh";
++    new_argv[0] = (char *) "/system/bin/sh";
+     new_argv[1] = (char *) file;
+     while (argc > 0)
+       {
+@@ -1761,7 +1782,7 @@
+            * what to search if PATH is unset. POSIX may, dunno.
+            */
+           
+-          path = "/bin:/usr/bin:.";
++          path = __prepend_prefix("/bin");
+ 	}
+ 
+       len = strlen (file) + 1;

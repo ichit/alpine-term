@@ -1,0 +1,17 @@
+diff -uNr busybox-1.29.1/libbb/change_identity.c busybox-1.29.1.mod/libbb/change_identity.c
+--- busybox-1.29.1/libbb/change_identity.c	2018-07-02 14:23:06.000000000 +0300
++++ busybox-1.29.1.mod/libbb/change_identity.c	2018-07-31 14:48:08.164173520 +0300
+@@ -32,6 +32,7 @@
+ /* Become the user and group(s) specified by PW.  */
+ void FAST_FUNC change_identity(const struct passwd *pw)
+ {
++#ifndef __ANDROID__
+ 	int res;
+ 
+ 	res = initgroups(pw->pw_name, pw->pw_gid);
+@@ -56,4 +57,5 @@
+ 
+ 	xsetgid(pw->pw_gid);
+ 	xsetuid(pw->pw_uid);
++#endif
+ }

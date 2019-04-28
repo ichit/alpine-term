@@ -1,0 +1,20 @@
+diff -uNr busybox-1.29.1/coreutils/date.c busybox-1.29.1.mod/coreutils/date.c
+--- busybox-1.29.1/coreutils/date.c	2018-07-02 14:23:06.000000000 +0300
++++ busybox-1.29.1.mod/coreutils/date.c	2018-07-31 14:48:08.150840121 +0300
+@@ -303,9 +303,16 @@
+ 		ts.tv_sec = validate_tm_time(date_str, &tm_time);
+ 
+ 		/* if setting time, set it */
++#ifdef __ANDROID__
++		if (opt & OPT_SET) {
++			/* stime(2) is not available on Android and is not allowed anyway. */
++			bb_error_msg("can't set date: Operation not permitted");
++		}
++#else
+ 		if ((opt & OPT_SET) && stime(&ts.tv_sec) < 0) {
+ 			bb_perror_msg("can't set date");
+ 		}
++#endif
+ 	}
+ 
+ 	/* Display output */

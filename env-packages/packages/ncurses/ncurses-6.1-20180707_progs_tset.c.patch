@@ -1,0 +1,39 @@
+diff -uNr ncurses-6.1-20180707/progs/tset.c ncurses-6.1-20180707.mod/progs/tset.c
+--- ncurses-6.1-20180707/progs/tset.c	2017-10-08 03:01:29.000000000 +0300
++++ ncurses-6.1-20180707.mod/progs/tset.c	2018-08-14 14:54:50.871471583 +0300
+@@ -525,6 +525,24 @@
+  *
+  **************************************************************************/
+ 
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
++#endif
++
+ /*
+  * Figure out what kind of terminal we're dealing with, and then read in
+  * its termcap entry.
+@@ -566,8 +584,8 @@
+ 	    goto map;
+ 	}
+ #else
+-	if ((fp = fopen("/etc/ttytype", "r")) != 0
+-	    || (fp = fopen("/etc/ttys", "r")) != 0) {
++	if ((fp = fopen(__prepend_prefix("/etc/ttytype"), "r")) != 0
++	    || (fp = fopen(__prepend_prefix("/etc/ttys"), "r")) != 0) {
+ 	    char buffer[BUFSIZ];
+ 	    char *s, *t, *d;
+ 

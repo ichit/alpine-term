@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- NOTE: default values are set in LauncherPreferences.initializeDefaults() -->
+
+    <PreferenceCategory android:title="@string/pref_cat_qemu">
+        <ListPreference
+            android:title="@string/qemu_ram_title"
+            android:summary="@string/qemu_ram_desc"
+            android:key="@string/qemu_ram_key"
+            android:entries="@array/qemu_ram_labels"
+            android:entryValues="@array/qemu_ram_values" />
+
+        <EditTextPreference
+            android:title="@string/qemu_hdd1_path_title"
+            android:summary="@string/qemu_hdd1_path_desc"
+            android:key="@string/qemu_hdd1_path_key"
+            android:inputType="text|textNoSuggestions|textVisiblePassword"
+            android:maxLines="1"
+            android:hint="@string/qemu_hdd1_path_hint" />
+
+        <EditTextPreference
+            android:title="@string/qemu_hdd2_path_title"
+            android:summary="@string/qemu_hdd2_path_desc"
+            android:key="@string/qemu_hdd2_path_key"
+            android:inputType="text|textNoSuggestions|textVisiblePassword"
+            android:maxLines="1"
+            android:hint="@string/qemu_hdd2_path_hint" />
+
+        <EditTextPreference
+            android:title="@string/qemu_cdrom_path_title"
+            android:summary="@string/qemu_cdrom_path_desc"
+            android:key="@string/qemu_cdrom_path_key"
+            android:inputType="text|textNoSuggestions|textVisiblePassword"
+            android:maxLines="1"
+            android:hint="@string/qemu_cdrom_path_hint" />
+
+        <EditTextPreference
+            android:title="@string/qemu_upstream_dns_title"
+            android:summary="@string/qemu_upstream_dns_desc"
+            android:key="@string/qemu_upstream_dns_key"
+            android:inputType="numberDecimal"
+            android:digits="0123456789."
+            android:maxLength="15"
+            android:hint="@string/qemu_upstream_dns_hint" />
+
+        <EditTextPreference
+            android:title="@string/qemu_exposed_ports_title"
+            android:summary="@string/qemu_exposed_ports_desc"
+            android:key="@string/qemu_exposed_ports_key"
+            android:inputType="text|textNoSuggestions|textVisiblePassword"
+            android:maxLines="1"
+            android:hint="@string/qemu_exposed_ports_hint" />
+    </PreferenceCategory>
+</PreferenceScreen>

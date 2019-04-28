@@ -1,0 +1,14 @@
+diff -uNr busybox-1.29.1/libbb/missing_syscalls.c busybox-1.29.1.mod/libbb/missing_syscalls.c
+--- busybox-1.29.1/libbb/missing_syscalls.c	2018-07-02 14:23:06.000000000 +0300
++++ busybox-1.29.1.mod/libbb/missing_syscalls.c	2018-07-31 14:48:08.170840219 +0300
+@@ -10,10 +10,6 @@
+ #if defined(ANDROID) || defined(__ANDROID__)
+ /*# include <linux/timex.h> - for struct timex, but may collide with <time.h> */
+ # include <sys/syscall.h>
+-pid_t getsid(pid_t pid)
+-{
+-	return syscall(__NR_getsid, pid);
+-}
+ 
+ int stime(const time_t *t)
+ {

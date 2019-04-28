@@ -1,0 +1,12 @@
+diff -uNr glib-2.56.1/gio/gdbusaddress.c glib-2.56.1.mod/gio/gdbusaddress.c
+--- glib-2.56.1/gio/gdbusaddress.c	2018-02-06 17:44:20.000000000 +0200
++++ glib-2.56.1.mod/gio/gdbusaddress.c	2018-08-14 17:04:57.108029417 +0300
+@@ -1624,7 +1624,7 @@
+       ret = g_strdup (g_getenv ("DBUS_SYSTEM_BUS_ADDRESS"));
+       if (ret == NULL)
+         {
+-          ret = g_strdup ("unix:path=/var/run/dbus/system_bus_socket");
++          ret = g_strdup ("unix:path=@TERMUX_PREFIX@/var/run/dbus/system_bus_socket");
+         }
+       break;
+ 

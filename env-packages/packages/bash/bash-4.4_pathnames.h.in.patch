@@ -1,0 +1,20 @@
+diff -uNr bash-4.4/pathnames.h.in bash-4.4.mod/pathnames.h.in
+--- bash-4.4/pathnames.h.in	2009-01-04 21:32:40.000000000 +0200
++++ bash-4.4.mod/pathnames.h.in	2019-04-24 21:10:37.422026091 +0300
+@@ -21,13 +21,8 @@
+ #if !defined (_PATHNAMES_H_)
+ #define _PATHNAMES_H_
+ 
+-/* The default file for hostname completion. */
+-#define DEFAULT_HOSTS_FILE "/etc/hosts"
+-
+-/* The default login shell startup file. */
+-#define SYS_PROFILE "/etc/profile"
+-
+-/* The default location of the bash debugger initialization/startup file. */
+-#define DEBUGGER_START_FILE	"@DEBUGGER_START_FILE@"
++#ifdef DEBUGGER_START_FILE
++#undef DEBUGGER_START_FILE
++#endif
+ 
+ #endif /* _PATHNAMES_H */

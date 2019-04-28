@@ -1,0 +1,122 @@
+diff -uNr readline-7.0/bind.c readline-7.0.mod/bind.c
+--- readline-7.0/bind.c	2016-07-27 18:15:31.000000000 +0300
++++ readline-7.0.mod/bind.c	2019-04-27 16:56:24.485958812 +0300
+@@ -891,6 +891,24 @@
+   return r;
+ }
+ 
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
++#endif
++
+ /* Do key bindings from a file.  If FILENAME is NULL it defaults
+    to the first non-null filename from this list:
+      1. the filename used for the previous call
+@@ -903,6 +921,9 @@
+ rl_read_init_file (filename)
+      const char *filename;
+ {
++
++  char *prefix_inputrc_path = __prepend_prefix("/etc/inputrc");
++
+   /* Default the filename. */
+   if (filename == 0)
+     filename = last_readline_init_file;
+@@ -913,8 +934,9 @@
+       filename = DEFAULT_INPUTRC;
+       /* Try to read DEFAULT_INPUTRC; fall back to SYS_INPUTRC on failure */
+       if (_rl_read_init_file (filename, 0) == 0)
+-	return 0;
+-      filename = SYS_INPUTRC;
++        return 0;
++
++      filename = prefix_inputrc_path;
+     }
+ 
+ #if defined (__MSDOS__)
+@@ -922,7 +944,11 @@
+     return 0;
+   filename = "~/_inputrc";
+ #endif
+-  return (_rl_read_init_file (filename, 0));
++
++  int ret = _rl_read_init_file (filename, 0);
++  free(prefix_inputrc_path);
++
++  return ret;
+ }
+ 
+ static int
+diff -uNr readline-7.0/rlconf.h readline-7.0.mod/rlconf.h
+--- readline-7.0/rlconf.h	2016-01-25 17:35:32.000000000 +0200
++++ readline-7.0.mod/rlconf.h	2019-04-27 16:53:58.111355343 +0300
+@@ -42,9 +42,6 @@
+ /* The next-to-last-ditch effort file name for a user-specific init file. */
+ #define DEFAULT_INPUTRC "~/.inputrc"
+ 
+-/* The ultimate last-ditch filenname for an init file -- system-wide. */
+-#define SYS_INPUTRC "/etc/inputrc"
+-
+ /* If defined, expand tabs to spaces. */
+ #define DISPLAY_TABS
+ 
+diff -uNr readline-7.0/util.c readline-7.0.mod/util.c
+--- readline-7.0/util.c	2015-12-30 21:09:27.000000000 +0200
++++ readline-7.0.mod/util.c	2019-04-27 16:55:52.716828054 +0300
+@@ -511,10 +511,29 @@
+   va_end (args);
+ }
+ 
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
++#endif
++
+ int
+ _rl_tropen ()
+ {
+   char fnbuf[128], *x;
++  char *prefix_tmp_path = __prepend_prefix("/tmp");
+ 
+   if (_rl_tracefp)
+     fclose (_rl_tracefp);
+@@ -523,10 +542,11 @@
+   if (x == 0)
+     x = ".";
+ #else
+-  x = "/var/tmp";
++  x = prefix_tmp_path;
+ #endif
+   sprintf (fnbuf, "%s/rltrace.%ld", x, (long)getpid());
+   unlink(fnbuf);
++  free(prefix_tmp_path);
+   _rl_tracefp = fopen (fnbuf, "w+");
+   return _rl_tracefp != 0;
+ }

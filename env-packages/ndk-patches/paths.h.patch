@@ -1,0 +1,45 @@
+diff --git a/sysroot/usr/include/paths.h b/usr/include/paths.h
+index 922d1ce..45bf357 100644
+--- a/sysroot/usr/include/paths.h
++++ b/usr/include/paths.h
+@@ -34,15 +34,37 @@
+ 
+ #include <sys/cdefs.h>
+ 
+-#ifndef _PATH_BSHELL
+-#define	_PATH_BSHELL	"/system/bin/sh"
++#ifndef ANDROID_PREPEND_PREFIX
++#define ANDROID_PREPEND_PREFIX 1
++int  asprintf(char** __s_ptr, const char* __fmt, ...) __printflike(2, 3);
++char* getenv(const char* __name);
++static __inline__ char *__prepend_prefix(char *path) {
++        char *_new_path;
++        char *_env_prefix = getenv("PREFIX");
++
++        if (_env_prefix) {
++                asprintf(&_new_path, "%s%s", _env_prefix, path);
++                return _new_path;
++        } else {
++                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
++                return _new_path;
++        }
++}
+ #endif
++
++#define	_PATH_BSHELL	__prepend_prefix("/bin/sh")
+ #define	_PATH_CONSOLE	"/dev/console"
+-#define	_PATH_DEFPATH	"/sbin:/system/sbin:/system/bin:/system/xbin:/odm/bin:/vendor/bin:/vendor/xbin"
++#define	_PATH_DEFPATH	__prepend_prefix("/bin")
+ #define	_PATH_DEV	"/dev/"
+ #define	_PATH_DEVNULL	"/dev/null"
+ #define	_PATH_KLOG	"/proc/kmsg"
+ #define	_PATH_MOUNTED	"/proc/mounts"
+ #define	_PATH_TTY	"/dev/tty"
+ 
++#define	_PATH_STDPATH	_PATH_DEFPATH
++#define	_PATH_TMP	__prepend_prefix("/tmp/")
++#define	_PATH_VARDB	__prepend_prefix("/var/db/")
++#define	_PATH_VARRUN	__prepend_prefix("/var/run/")
++#define	_PATH_VARTMP	__prepend_prefix("/var/tmp/")
++
+ #endif /* !_PATHS_H_ */

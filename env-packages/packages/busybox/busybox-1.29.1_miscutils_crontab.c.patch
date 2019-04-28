@@ -1,0 +1,26 @@
+diff -uNr busybox-1.29.1/miscutils/crontab.c busybox-1.29.1.mod/miscutils/crontab.c
+--- busybox-1.29.1/miscutils/crontab.c	2018-07-02 14:23:06.000000000 +0300
++++ busybox-1.29.1.mod/miscutils/crontab.c	2018-07-31 14:48:08.160840170 +0300
+@@ -53,10 +53,12 @@
+ 
+ 	/* CHILD - change user and run editor */
+ 	/* initgroups, setgid, setuid */
++#ifndef __ANDROID__
+ 	change_identity(pas);
+ 	setup_environment(pas->pw_shell,
+ 			SETUP_ENV_CHANGEENV | SETUP_ENV_TO_TMP,
+ 			pas);
++#endif
+ 	ptr = getenv("VISUAL");
+ 	if (!ptr) {
+ 		ptr = getenv("EDITOR");
+@@ -167,7 +169,8 @@
+ 		}
+ 		close_on_exec_on(src_fd); /* don't want editor to see this fd */
+ 		edit_file(pas, tmp_fname);
+-		/* fall through */
++        xrename(tmp_fname, pas->pw_name);
++        break;
+ 
+ 	case 0: /* Replace (no -l, -e, or -r were given) */
+ 		new_fname = xasprintf("%s.new", pas->pw_name);

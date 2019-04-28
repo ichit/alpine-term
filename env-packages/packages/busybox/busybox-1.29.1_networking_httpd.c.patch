@@ -1,0 +1,42 @@
+diff -uNr busybox-1.29.1/networking/httpd.c busybox-1.29.1.mod/networking/httpd.c
+--- busybox-1.29.1/networking/httpd.c	2018-07-02 14:23:06.000000000 +0300
++++ busybox-1.29.1.mod/networking/httpd.c	2018-07-31 14:48:08.174173569 +0300
+@@ -234,7 +234,7 @@
+ //usage:     "\n	-i		Inetd mode"
+ //usage:     "\n	-f		Don't daemonize"
+ //usage:     "\n	-v[v]		Verbose"
+-//usage:     "\n	-p [IP:]PORT	Bind to IP:PORT (default *:80)"
++//usage:     "\n	-p [IP:]PORT	Bind to IP:PORT (default *:8080)"
+ //usage:	IF_FEATURE_HTTPD_SETUID(
+ //usage:     "\n	-u USER[:GRP]	Set uid/gid after binding to port")
+ //usage:	IF_FEATURE_HTTPD_BASIC_AUTH(
+@@ -488,9 +488,10 @@
+ #define INIT_G() do { \
+ 	setup_common_bufsiz(); \
+ 	SET_PTR_TO_GLOBALS(xzalloc(sizeof(G))); \
++	asm volatile("":::"memory"); \
+ 	IF_FEATURE_HTTPD_BASIC_AUTH(g_realm = "Web Server Authentication";) \
+ 	IF_FEATURE_HTTPD_RANGES(range_start = -1;) \
+-	bind_addr_or_port = "80"; \
++	bind_addr_or_port = "8080"; \
+ 	index_page = index_html; \
+ 	file_size = -1; \
+ } while (0)
+@@ -1006,7 +1007,7 @@
+ 	if (!errno && n && n <= 0xffff)
+ 		n = create_and_bind_stream_or_die(NULL, n);
+ 	else
+-		n = create_and_bind_stream_or_die(bind_addr_or_port, 80);
++		n = create_and_bind_stream_or_die(bind_addr_or_port, 8080);
+ 	xlisten(n, 9);
+ 	return n;
+ }
+@@ -2403,7 +2404,7 @@
+ 		int proxy_fd;
+ 		len_and_sockaddr *lsa;
+ 
+-		lsa = host2sockaddr(proxy_entry->host_port, 80);
++		lsa = host2sockaddr(proxy_entry->host_port, 8080);
+ 		if (lsa == NULL)
+ 			send_headers_and_exit(HTTP_INTERNAL_SERVER_ERROR);
+ 		proxy_fd = socket(lsa->u.sa.sa_family, SOCK_STREAM, 0);
