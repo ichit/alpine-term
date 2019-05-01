@@ -1,61 +1,20 @@
-diff -uNr qemu-4.0.0/block/cloop.c qemu-4.0.0.mod/block/cloop.c
---- qemu-4.0.0/block/cloop.c	2019-04-23 21:14:45.000000000 +0300
-+++ qemu-4.0.0.mod/block/cloop.c	2019-04-27 13:19:22.246484198 +0300
-@@ -47,7 +47,7 @@
- 
- static int cloop_probe(const uint8_t *buf, int buf_size, const char *filename)
- {
--    const char *magic_version_2_0 = "#!/bin/sh\n"
-+    const char *magic_version_2_0 = "#!/system/bin/sh\n"
-         "#V2.0 Format\n"
-         "modprobe cloop file=$0 && mount -r -t iso9660 /dev/cloop $1\n";
-     int length = strlen(magic_version_2_0);
 diff -uNr qemu-4.0.0/block.c qemu-4.0.0.mod/block.c
 --- qemu-4.0.0/block.c	2019-04-23 21:14:45.000000000 +0300
-+++ qemu-4.0.0.mod/block.c	2019-04-27 13:39:02.435083875 +0300
-@@ -585,6 +585,24 @@
-     return -ENOTSUP;
- }
- 
-+#ifndef ANDROID_PREPEND_PREFIX
-+#define ANDROID_PREPEND_PREFIX 1
-+int  asprintf(char** __s_ptr, const char* __fmt, ...);
-+char* getenv(const char* __name);
-+static __inline__ char *__prepend_prefix(char *path) {
-+        char *_new_path;
-+        char *_env_prefix = getenv("PREFIX");
-+
-+        if (_env_prefix) {
-+                asprintf(&_new_path, "%s%s", _env_prefix, path);
-+                return _new_path;
-+        } else {
-+                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
-+                return _new_path;
-+        }
-+}
-+#endif
-+
- /*
-  * Create a uniquely-named empty temporary file.
-  * Return 0 upon success, otherwise a negative errno value.
-@@ -602,21 +620,30 @@
- #else
++++ qemu-4.0.0.mod/block.c	2019-04-30 15:48:40.350266539 +0300
+@@ -603,20 +603,26 @@
      int fd;
      const char *tmpdir;
-+    char *prefixtmp_path = __prepend_prefix("/tmp");
      tmpdir = getenv("TMPDIR");
 +
      if (!tmpdir) {
 -        tmpdir = "/var/tmp";
-+        tmpdir = prefixtmp_path;
++        tmpdir = "@TERMUX_PREFIX@/tmp";
      }
 +
      if (snprintf(filename, size, "%s/vl.XXXXXX", tmpdir) >= size) {
-+        free(prefixtmp_path);
          return -EOVERFLOW;
      }
 +
-+    free(prefixtmp_path);
      fd = mkstemp(filename);
 +
      if (fd < 0) {
@@ -72,7 +31,7 @@ diff -uNr qemu-4.0.0/block.c qemu-4.0.0.mod/block.c
  }
 diff -uNr qemu-4.0.0/hw/usb/ccid-card-emulated.c qemu-4.0.0.mod/hw/usb/ccid-card-emulated.c
 --- qemu-4.0.0/hw/usb/ccid-card-emulated.c	2019-04-23 21:14:46.000000000 +0300
-+++ qemu-4.0.0.mod/hw/usb/ccid-card-emulated.c	2019-04-27 13:52:52.567988041 +0300
++++ qemu-4.0.0.mod/hw/usb/ccid-card-emulated.c	2019-04-30 15:50:31.485832837 +0300
 @@ -415,7 +415,6 @@
      event_notifier_cleanup(&card->notifier);
  }
@@ -81,41 +40,13 @@ diff -uNr qemu-4.0.0/hw/usb/ccid-card-emulated.c qemu-4.0.0.mod/hw/usb/ccid-card
  #define CERTIFICATES_ARGS_TEMPLATE\
      "db=\"%s\" use_hw=no soft=(,Virtual Reader,CAC,,%s,%s,%s)"
  
-@@ -439,19 +438,44 @@
-     return vcard_emul_init(options);
- }
- 
-+#ifndef ANDROID_PREPEND_PREFIX
-+#define ANDROID_PREPEND_PREFIX 1
-+int  asprintf(char** __s_ptr, const char* __fmt, ...);
-+char* getenv(const char* __name);
-+static __inline__ char *__prepend_prefix(char *path) {
-+        char *_new_path;
-+        char *_env_prefix = getenv("PREFIX");
-+
-+        if (_env_prefix) {
-+                asprintf(&_new_path, "%s%s", _env_prefix, path);
-+                return _new_path;
-+        } else {
-+                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
-+                return _new_path;
-+        }
-+}
-+#endif
-+
- static int emulated_initialize_vcard_from_certificates(EmulatedState *card)
- {
-     char emul_args[200];
+@@ -445,13 +444,16 @@
      VCardEmulOptions *options = NULL;
  
-+    char *prefix_nssdb_path = __prepend_prefix("/etc/pki/nssdb");
-+
      snprintf(emul_args, sizeof(emul_args) - 1, CERTIFICATES_ARGS_TEMPLATE,
 -        card->db ? card->db : CERTIFICATES_DEFAULT_DB,
-+        card->db ? card->db : prefix_nssdb_path,
++        card->db ? card->db : "@TERMUX_PREFIX@/etc/pki/nssdb",
          card->cert1, card->cert2, card->cert3);
-+
-+    free(prefix_nssdb_path);
 +
      options = vcard_emul_options(emul_args);
 +
@@ -129,7 +60,7 @@ diff -uNr qemu-4.0.0/hw/usb/ccid-card-emulated.c qemu-4.0.0.mod/hw/usb/ccid-card
  
 diff -uNr qemu-4.0.0/include/net/net.h qemu-4.0.0.mod/include/net/net.h
 --- qemu-4.0.0/include/net/net.h	2019-04-23 21:14:46.000000000 +0300
-+++ qemu-4.0.0.mod/include/net/net.h	2019-04-27 13:50:59.270134401 +0300
++++ qemu-4.0.0.mod/include/net/net.h	2019-04-30 15:47:35.503933215 +0300
 @@ -209,8 +209,6 @@
  int net_hub_id_for_client(NetClientState *nc, int *id);
  NetClientState *net_hub_port_find(int hub_id);
@@ -139,15 +70,27 @@ diff -uNr qemu-4.0.0/include/net/net.h qemu-4.0.0.mod/include/net/net.h
  #define DEFAULT_BRIDGE_HELPER CONFIG_QEMU_HELPERDIR "/qemu-bridge-helper"
  #define DEFAULT_BRIDGE_INTERFACE "br0"
  
+diff -uNr qemu-4.0.0/linux-user/syscall.c qemu-4.0.0.mod/linux-user/syscall.c
+--- qemu-4.0.0/linux-user/syscall.c	2019-04-23 21:14:46.000000000 +0300
++++ qemu-4.0.0.mod/linux-user/syscall.c	2019-04-30 15:51:37.599167189 +0300
+@@ -6833,7 +6833,7 @@
+         /* create temporary file to map stat to */
+         tmpdir = getenv("TMPDIR");
+         if (!tmpdir)
+-            tmpdir = "/tmp";
++            tmpdir = "@TERMUX_PREFIX@/tmp";
+         snprintf(filename, sizeof(filename), "%s/qemu-open.XXXXXX", tmpdir);
+         fd = mkstemp(filename);
+         if (fd < 0) {
 diff -uNr qemu-4.0.0/migration/exec.c qemu-4.0.0.mod/migration/exec.c
 --- qemu-4.0.0/migration/exec.c	2019-04-23 21:14:46.000000000 +0300
-+++ qemu-4.0.0.mod/migration/exec.c	2019-04-27 12:53:52.123756966 +0300
++++ qemu-4.0.0.mod/migration/exec.c	2019-04-30 15:52:19.661379049 +0300
 @@ -28,7 +28,7 @@
  void exec_start_outgoing_migration(MigrationState *s, const char *command, Error **errp)
  {
      QIOChannel *ioc;
 -    const char *argv[] = { "/bin/sh", "-c", command, NULL };
-+    const char *argv[] = { "/system/bin/sh", "-c", command, NULL };
++    const char *argv[] = { "@TERMUX_PREFIX@/bin/sh", "-c", command, NULL };
  
      trace_migration_exec_outgoing(command);
      ioc = QIO_CHANNEL(qio_channel_command_new_spawn(argv,
@@ -156,76 +99,46 @@ diff -uNr qemu-4.0.0/migration/exec.c qemu-4.0.0.mod/migration/exec.c
  {
      QIOChannel *ioc;
 -    const char *argv[] = { "/bin/sh", "-c", command, NULL };
-+    const char *argv[] = { "/system/bin/sh", "-c", command, NULL };
++    const char *argv[] = { "@TERMUX_PREFIX@/bin/sh", "-c", command, NULL };
  
      trace_migration_exec_incoming(command);
      ioc = QIO_CHANNEL(qio_channel_command_new_spawn(argv,
 diff -uNr qemu-4.0.0/net/tap.c qemu-4.0.0.mod/net/tap.c
 --- qemu-4.0.0/net/tap.c	2019-04-23 21:14:46.000000000 +0300
-+++ qemu-4.0.0.mod/net/tap.c	2019-04-27 13:52:16.214724798 +0300
++++ qemu-4.0.0.mod/net/tap.c	2019-04-30 15:54:00.958886851 +0300
 @@ -526,7 +526,7 @@
              *parg++ = helper_cmd;
              *parg++ = NULL;
  
 -            execv("/bin/sh", args);
-+            execv("/system/bin/sh", args);
++            execv("@TERMUX_PREFIX@/bin/sh", args);
          } else {
              /* assume helper is just the executable path name */
  
-@@ -751,6 +751,24 @@
-     return i;
- }
- 
-+#ifndef ANDROID_PREPEND_PREFIX
-+#define ANDROID_PREPEND_PREFIX 1
-+int  asprintf(char** __s_ptr, const char* __fmt, ...);
-+char* getenv(const char* __name);
-+static __inline__ char *__prepend_prefix(char *path) {
-+        char *_new_path;
-+        char *_env_prefix = getenv("PREFIX");
-+
-+        if (_env_prefix) {
-+                asprintf(&_new_path, "%s%s", _env_prefix, path);
-+                return _new_path;
-+        } else {
-+                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
-+                return _new_path;
-+        }
-+}
-+#endif
-+
- int net_init_tap(const Netdev *netdev, const char *name,
-                  NetClientState *peer, Error **errp)
- {
-@@ -903,9 +921,11 @@
+@@ -903,9 +903,9 @@
              error_setg(errp, "vhostfds= is invalid if fds= wasn't specified");
              return -1;
          }
 -        script = tap->has_script ? tap->script : DEFAULT_NETWORK_SCRIPT;
 -        downscript = tap->has_downscript ? tap->downscript :
 -            DEFAULT_NETWORK_DOWN_SCRIPT;
-+        char *prefix_tap_up_script = __prepend_prefix("/etc/qemu-ifup");
-+        char *prefix_tap_down_script = __prepend_prefix("/etc/qemu-ifdown");
 +
-+        script = tap->has_script ? tap->script : prefix_tap_up_script;
-+        downscript = tap->has_downscript ? tap->downscript : prefix_tap_down_script;
++        script = tap->has_script ? tap->script : "@TERMUX_PREFIX@/etc/qemu-ifup";
++        downscript = tap->has_downscript ? tap->downscript : "@TERMUX_PREFIX@/etc/qemu-ifdown";
  
          if (tap->has_ifname) {
              pstrcpy(ifname, sizeof ifname, tap->ifname);
-@@ -932,6 +952,10 @@
+@@ -932,6 +932,7 @@
                               i >= 1 ? "no" : script,
                               i >= 1 ? "no" : downscript,
                               vhostfdname, vnet_hdr, fd, &err);
-+
-+            free(prefix_tap_up_script);
-+            free(prefix_tap_down_script);
 +
              if (err) {
                  error_propagate(errp, err);
                  close(fd);
 diff -uNr qemu-4.0.0/qemu-nbd.c qemu-4.0.0.mod/qemu-nbd.c
 --- qemu-4.0.0/qemu-nbd.c	2019-04-23 21:14:46.000000000 +0300
-+++ qemu-4.0.0.mod/qemu-nbd.c	2019-04-27 13:52:46.966948094 +0300
++++ qemu-4.0.0.mod/qemu-nbd.c	2019-04-30 15:55:17.646269318 +0300
 @@ -49,7 +49,6 @@
  #define HAVE_NBD_DEVICE 0
  #endif
@@ -243,46 +156,18 @@ diff -uNr qemu-4.0.0/qemu-nbd.c qemu-4.0.0.mod/qemu-nbd.c
  "  -e, --shared=NUM          device can be shared by NUM clients (default '1')\n"
  "  -t, --persistent          don't exit on the last connection\n"
  "  -v, --verbose             display extra debugging information\n"
-@@ -603,6 +602,24 @@
-     bdrv_close_all();
- }
- 
-+#ifndef ANDROID_PREPEND_PREFIX
-+#define ANDROID_PREPEND_PREFIX 1
-+int  asprintf(char** __s_ptr, const char* __fmt, ...);
-+char* getenv(const char* __name);
-+static __inline__ char *__prepend_prefix(char *path) {
-+        char *_new_path;
-+        char *_env_prefix = getenv("PREFIX");
-+
-+        if (_env_prefix) {
-+                asprintf(&_new_path, "%s%s", _env_prefix, path);
-+                return _new_path;
-+        } else {
-+                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
-+                return _new_path;
-+        }
-+}
-+#endif
-+
- int main(int argc, char **argv)
- {
-     BlockBackend *blk;
-@@ -1049,8 +1066,10 @@
-     }
+@@ -1050,7 +1049,7 @@
  
      if (device != NULL && sockpath == NULL) {
-+        char *prefix_sock_path = __prepend_prefix("/tmp/qemu-nbd-sock-%s");
          sockpath = g_malloc(128);
 -        snprintf(sockpath, 128, SOCKET_PATH, basename(device));
-+        snprintf(sockpath, 128, prefix_sock_path, basename(device));
-+        free(prefix_sock_path);
++        snprintf(sockpath, 128, "@TERMUX_PREFIX@/tmp/qemu-nbd-sock-%s", basename(device));
      }
  
      server = qio_net_listener_new();
 diff -uNr qemu-4.0.0/qemu-options.hx qemu-4.0.0.mod/qemu-options.hx
 --- qemu-4.0.0/qemu-options.hx	2019-04-23 21:14:46.000000000 +0300
-+++ qemu-4.0.0.mod/qemu-options.hx	2019-04-27 13:46:34.869661478 +0300
++++ qemu-4.0.0.mod/qemu-options.hx	2019-04-30 15:47:35.506933231 +0300
 @@ -2086,8 +2086,8 @@
      "         [,poll-us=n]\n"
      "                configure a host TAP network backend with ID 'str'\n"
@@ -296,31 +181,8 @@ diff -uNr qemu-4.0.0/qemu-options.hx qemu-4.0.0.mod/qemu-options.hx
      "                use network helper 'helper' (default=" DEFAULT_BRIDGE_HELPER ") to\n"
 diff -uNr qemu-4.0.0/slirp/src/slirp.c qemu-4.0.0.mod/slirp/src/slirp.c
 --- qemu-4.0.0/slirp/src/slirp.c	2019-04-23 21:14:46.000000000 +0300
-+++ qemu-4.0.0.mod/slirp/src/slirp.c	2019-04-27 12:48:47.163414330 +0300
-@@ -119,19 +119,45 @@
- 
- #else
- 
-+#ifndef ANDROID_PREPEND_PREFIX
-+#define ANDROID_PREPEND_PREFIX 1
-+int  asprintf(char** __s_ptr, const char* __fmt, ...);
-+char* getenv(const char* __name);
-+static __inline__ char *__prepend_prefix(char *path) {
-+        char *_new_path;
-+        char *_env_prefix = getenv("PREFIX");
-+
-+        if (_env_prefix) {
-+                asprintf(&_new_path, "%s%s", _env_prefix, path);
-+                return _new_path;
-+        } else {
-+                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
-+                return _new_path;
-+        }
-+}
-+#endif
-+
- static int get_dns_addr_cached(void *pdns_addr, void *cached_addr,
-                                socklen_t addrlen,
++++ qemu-4.0.0.mod/slirp/src/slirp.c	2019-04-30 15:56:37.710667145 +0300
+@@ -124,14 +124,20 @@
                                 struct stat *cached_stat, unsigned *cached_time)
  {
      struct stat old_stat;
@@ -333,9 +195,7 @@ diff -uNr qemu-4.0.0/slirp/src/slirp.c qemu-4.0.0.mod/slirp/src/slirp.c
      old_stat = *cached_stat;
 -    if (stat("/etc/resolv.conf", cached_stat) != 0) {
 +
-+    char *resolvconf_path = __prepend_prefix("/etc/resolv.conf");
-+    int ret = stat(resolvconf_path, cached_stat);
-+    free(resolvconf_path);
++    int ret = stat("@TERMUX_PREFIX@/etc/resolv.conf", cached_stat);
 +
 +    if (ret != 0) {
          return -1;
@@ -344,7 +204,7 @@ diff -uNr qemu-4.0.0/slirp/src/slirp.c qemu-4.0.0.mod/slirp/src/slirp.c
      if (cached_stat->st_dev == old_stat.st_dev
          && cached_stat->st_ino == old_stat.st_ino
          && cached_stat->st_size == old_stat.st_size
-@@ -139,6 +165,7 @@
+@@ -139,6 +145,7 @@
          memcpy(pdns_addr, cached_addr, addrlen);
          return 0;
      }
@@ -352,55 +212,25 @@ diff -uNr qemu-4.0.0/slirp/src/slirp.c qemu-4.0.0.mod/slirp/src/slirp.c
      return 1;
  }
  
-@@ -153,7 +180,10 @@
+@@ -153,7 +160,8 @@
      void *tmp_addr = alloca(addrlen);
      unsigned if_index;
  
 -    f = fopen("/etc/resolv.conf", "r");
-+    char *resolvconf_path = __prepend_prefix("/etc/resolv.conf");
-+    f = fopen(resolvconf_path, "r");
-+    free(resolvconf_path);
++    f = fopen("@TERMUX_PREFIX@/etc/resolv.conf", "r");
 +
      if (!f)
          return -1;
  
 diff -uNr qemu-4.0.0/tcg/tcg.c qemu-4.0.0.mod/tcg/tcg.c
 --- qemu-4.0.0/tcg/tcg.c	2019-04-23 21:14:46.000000000 +0300
-+++ qemu-4.0.0.mod/tcg/tcg.c	2019-04-27 13:21:14.422310964 +0300
-@@ -4135,6 +4135,24 @@
-     }
- }
- 
-+#ifndef ANDROID_PREPEND_PREFIX
-+#define ANDROID_PREPEND_PREFIX 1
-+int  asprintf(char** __s_ptr, const char* __fmt, ...);
-+char* getenv(const char* __name);
-+static __inline__ char *__prepend_prefix(char *path) {
-+        char *_new_path;
-+        char *_env_prefix = getenv("PREFIX");
-+
-+        if (_env_prefix) {
-+                asprintf(&_new_path, "%s%s", _env_prefix, path);
-+                return _new_path;
-+        } else {
-+                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
-+                return _new_path;
-+        }
-+}
-+#endif
-+
- static void tcg_register_jit_int(void *buf_ptr, size_t buf_size,
-                                  const void *debug_frame,
-                                  size_t debug_frame_size)
-@@ -4315,11 +4333,16 @@
++++ qemu-4.0.0.mod/tcg/tcg.c	2019-04-30 15:57:46.031820043 +0300
+@@ -4315,11 +4315,13 @@
      /* Enable this block to be able to debug the ELF image file creation.
         One can use readelf, objdump, or other inspection utilities.  */
      {
 -        FILE *f = fopen("/tmp/qemu.jit", "w+b");
-+        char *qemujit_tmp_file = __prepend_prefix("/tmp/qemu.jit");
-+
-+        FILE *f = fopen(qemujit_tmp_file, "w+b");
-+        free(qemujit_tmp_file);
++        FILE *f = fopen("@TERMUX_PREFIX@/tmp/qemu.jit", "w+b");
 +
          if (f) {
              if (fwrite(img, img_size, 1, f) != img_size) {
@@ -412,41 +242,13 @@ diff -uNr qemu-4.0.0/tcg/tcg.c qemu-4.0.0.mod/tcg/tcg.c
      }
 diff -uNr qemu-4.0.0/util/qemu-sockets.c qemu-4.0.0.mod/util/qemu-sockets.c
 --- qemu-4.0.0/util/qemu-sockets.c	2019-04-23 21:14:46.000000000 +0300
-+++ qemu-4.0.0.mod/util/qemu-sockets.c	2019-04-27 13:52:59.015033755 +0300
-@@ -823,6 +823,24 @@
- 
- #ifndef _WIN32
- 
-+#ifndef ANDROID_PREPEND_PREFIX
-+#define ANDROID_PREPEND_PREFIX 1
-+int  asprintf(char** __s_ptr, const char* __fmt, ...);
-+char* getenv(const char* __name);
-+static __inline__ char *__prepend_prefix(char *path) {
-+        char *_new_path;
-+        char *_env_prefix = getenv("PREFIX");
-+
-+        if (_env_prefix) {
-+                asprintf(&_new_path, "%s%s", _env_prefix, path);
-+                return _new_path;
-+        } else {
-+                asprintf(&_new_path, "%s%s", "@TERMUX_PREFIX@", path);
-+                return _new_path;
-+        }
-+}
-+#endif
-+
- static int unix_listen_saddr(UnixSocketAddress *saddr,
-                              Error **errp)
- {
-@@ -841,8 +859,10 @@
++++ qemu-4.0.0.mod/util/qemu-sockets.c	2019-04-30 15:58:34.510637663 +0300
+@@ -841,7 +841,7 @@
          path = saddr->path;
      } else {
          const char *tmpdir = getenv("TMPDIR");
 -        tmpdir = tmpdir ? tmpdir : "/tmp";
-+        char *prefixtmp_path = __prepend_prefix("/tmp");
-+        tmpdir = tmpdir ? tmpdir : prefixtmp_path;
++        tmpdir = tmpdir ? tmpdir : "@TERMUX_PREFIX@/tmp";
          path = pathbuf = g_strdup_printf("%s/qemu-socket-XXXXXX", tmpdir);
-+        free(prefixtmp_path);
      }
  
-     if (strlen(path) > sizeof(un.sun_path)) {

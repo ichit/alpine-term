@@ -6,7 +6,7 @@ diff -uNr qemu-4.0.0/tcg/i386/tcg-target.inc.c qemu-4.0.0.mod/tcg/i386/tcg-targe
  #  include <asm/prctl.h>
  #  include <sys/prctl.h>
 -int arch_prctl(int code, unsigned long addr);
-+#  include <unistd.h>
++#  include <linux/unistd.h>
 +static int arch_prctl(int code, unsigned long addr)
 +{
 +    return syscall(__NR_arch_prctl, code, addr);
