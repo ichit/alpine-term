@@ -199,6 +199,7 @@ qemu_session() {
             msg
             unblock_terminal
 
+            libbusybox.so stty sane
             read -rs -p "Press enter to exit..."
             exec libbash.so -c "libbusybox.so killall -9 libbash.so; exit 1" > /dev/null 2>&1
         fi
@@ -220,6 +221,7 @@ qemu_session() {
         msg
         unblock_terminal
 
+        libbusybox.so stty sane
         read -rs -p "Press enter to exit..."
         exec libbash.so -c "libbusybox.so killall -9 libsocat.so; libbusybox.so killall -9 libbash.so; exit 1" > /dev/null 2>&1
     fi
@@ -237,6 +239,7 @@ qemu_session() {
         msg
         unblock_terminal
 
+        libbusybox.so stty sane
         read -rs -p "Press enter to exit..."
         exec libbash.so -c "libbusybox.so killall -9 libsocat.so; libbusybox.so killall -9 libbash.so; exit 1" > /dev/null 2>&1
     fi
@@ -352,6 +355,7 @@ qemu_session() {
 
     if [ ${qemu_ret} -ne 0 ]; then
         msg
+        libbusybox.so stty sane
         read -rs -p "Press enter to exit..."
     fi
 
@@ -364,6 +368,7 @@ serial_console_session() {
         msg
         msg "[BUG] Session number is not specified."
         msg
+        libbusybox.so stty sane
         read -rs -p "Press enter to exit..."
         exec libbash.so -c "libbusybox.so killall -9 libsocat.so; libbusybox.so killall -9 libbash.so; exit 1" > /dev/null 2>&1
     fi
@@ -394,6 +399,7 @@ if [ "${#}" -gt 0 ]; then
         msg
         msg "[BUG]: Got unknown session type '${1}'."
         msg
+        libbusybox.so stty sane
         read -rs -p "Press enter to exit..."
         exit 1
     fi
@@ -402,6 +408,7 @@ else
     msg
     msg "[BUG]: No session type specified."
     msg
+    libbusybox.so stty sane
     read -rs -p "Press enter to exit..."
     exit 1
 fi
