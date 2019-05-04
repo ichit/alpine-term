@@ -13,7 +13,7 @@ the serial consoles of the virtual machine.
 
  - AArch64-based device.
  - Android 7.0+
- - At least 4 GB of space on the internal storage.
+ - At least 500 MB of space on the internal storage.
  - Internet (if you want to install/update packages).
 
 ## Credits
