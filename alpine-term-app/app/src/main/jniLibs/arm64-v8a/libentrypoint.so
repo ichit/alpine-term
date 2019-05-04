@@ -1,4 +1,4 @@
-#!/data/data/xeffyr.alpine.term/files/environment/bin/libbash.so
+#!/bin/bash
 ##
 ##  QEMU Launcher.
 ##

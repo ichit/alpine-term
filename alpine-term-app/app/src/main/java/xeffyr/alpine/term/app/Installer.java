@@ -28,31 +28,6 @@ import xeffyr.alpine.term.BuildConfig;
 import xeffyr.alpine.term.R;
 import xeffyr.alpine.term.terminal.EmulatorDebug;
 
-/**
- * Install the environment if necessary by following the below steps:
- * <p/>
- * (1) Check for version file. If specified version does not match application's version code, then delete
- * environment directory ($PREFIX) if it exist.
- * <p/>
- * (2) A progress dialog is shown with "Updating environment..." message and a spinner.
- * <p/>
- * (3) Extract file 'assets/environment/{device_architecture}.bin' into $STAGING_PREFIX.
- * </p>
- * (3.1) If the zip entry encountered is EXECUTABLES.txt, go through it and remember all files that should have executable bit.
- * </p>
- * (3.2) If the zip entry encountered is SYMLINKS.txt, go through it and remember all symlinks to setup.
- * <p/>
- * (4) Extract the OS image and place it into $STAGING_PREFIX.
- * </p>
- * (5) Extract the entry point script (assets/environment/entrypoint.bash) and place it into $STAGING_PREFIX.
- * </p>
- * (6) Set executable permissions according to EXECUTABLES.txt.
- * </p>
- * (7) Create symlinks according to SYMLINKS.txt.
- * </p>
- * (8) Rename $STAGING_PREFIX to $PREFIX.
- */
-
 @SuppressWarnings("WeakerAccess")
 final class Installer {
 
@@ -137,18 +112,6 @@ final class Installer {
                             }
                             outStream.flush();
                             Os.chmod(STAGING_PREFIX_PATH + "/os_cdrom.iso", 0x100);
-                        }
-                    }
-
-                    // Extract entry point script.
-                    try (InputStream inStream = assetManager.open("environment/entrypoint.bash")) {
-                        try (FileOutputStream outStream = new FileOutputStream(STAGING_PREFIX_PATH + "/entrypoint.bash")) {
-                            int readBytes;
-                            while ((readBytes = inStream.read(buffer)) != -1) {
-                                outStream.write(buffer, 0, readBytes);
-                            }
-                            outStream.flush();
-                            Os.chmod(STAGING_PREFIX_PATH + "/entrypoint.bash", 0x140);
                         }
                     }
 

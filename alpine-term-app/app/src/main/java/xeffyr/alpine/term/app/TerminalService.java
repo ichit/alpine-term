@@ -250,7 +250,7 @@ public final class TerminalService extends Service implements SessionChangedCall
             environment.add("SERIAL_CONSOLE_NUMBER=" + sessionNumber);
         }
 
-        String processArgs[] = {execPath + "/libbash.so", prefix + "/entrypoint.bash", String.valueOf(sessionType)};
+        String processArgs[] = {execPath + "/libbash.so", execPath + "/libentrypoint.so", String.valueOf(sessionType)};
         TerminalSession session = new TerminalSession(execPath + "/libbash.so", processArgs, environment.toArray(new String[0]), home, this);
         mTerminalSessions.add(session);
         updateNotification();
