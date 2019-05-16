@@ -285,12 +285,12 @@ qemu_session() {
 
     # Setup primary hard drive image (with the main OS installation).
     set -- "${@}" "-device" "virtio-scsi-pci"
-    set -- "${@}" "-drive" "file=${CONFIG_QEMU_HDD1_PATH},if=none,discard=unmap,cache=none,id=hd0"
+    set -- "${@}" "-drive" "file=${CONFIG_QEMU_HDD1_PATH},if=none,discard=unmap,cache=writeback,id=hd0"
     set -- "${@}" "-device" "scsi-hd,drive=hd0"
 
     # Setup secondary hard drive image if requested.
     if [ -n "${CONFIG_QEMU_HDD2_PATH}" ]; then
-        set -- "${@}" "-drive" "file=${CONFIG_QEMU_HDD2_PATH},if=none,discard=unmap,cache=none,id=hd1"
+        set -- "${@}" "-drive" "file=${CONFIG_QEMU_HDD2_PATH},if=none,discard=unmap,cache=writeback,id=hd1"
         set -- "${@}" "-device" "scsi-hd,drive=hd1"
     fi
 
