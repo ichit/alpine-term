@@ -222,9 +222,6 @@ public final class TerminalView extends View {
 
         updateSize();
 
-        // Automatically reset terminal for session we attaching to.
-        session.reset();
-
         // Wait with enabling the scrollbar until we have a terminal to get scroll position from.
         setVerticalScrollBarEnabled(true);
 
