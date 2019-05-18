@@ -8,10 +8,9 @@
     <string name="ok_label">OK</string>
 
     <!-- Installer dialog -->
-    <string name="installer_toast_update_failure_msg">Failed to start environment update</string>
-    <string name="installer_progress_message">Updating environment…\nBe patient…</string>
+    <string name="installer_progress_message">Installing environment…\nBe patient…</string>
     <string name="installer_error_title">Installation failed</string>
-    <string name="installer_error_body">Application was unable to install the new environment.</string>
+    <string name="installer_error_body">Application was unable to install the runtime environment.</string>
     <string name="installer_error_try_again_button">Try again</string>
 
     <!-- Shared storage permission denial dialog -->
@@ -37,7 +36,7 @@
     <string name="menu_share_transcript">Share transcript</string>
     <string name="menu_reset_terminal">Reset</string>
     <string name="menu_toggle_keep_screen_on">Keep screen on</string>
-    <string name="menu_toggle_back_is_escape">Back key sends escape</string>
+    <string name="menu_toggle_back_is_escape">Remap key \&quot;back\&quot; to \&quot;escape\&quot;</string>
     <string name="menu_toggle_ignore_bell">Ignore bell character</string>
 
     <!-- Context menu: Fonts and Colors -->
@@ -48,7 +47,7 @@
     <!-- Context menu: Select URL dialog -->
     <string name="select_url_dialog_title">Click URL to copy or long press to open</string>
     <string name="select_url_toast_no_found">No URLs found in the terminal</string>
-    <string name="select_url_toast_copied_to_clipboard">URL copied to clipboard</string>
+    <string name="select_url_toast_copied_to_clipboard">URL was copied to clipboard</string>
     <string name="select_url_toast_cannot_open">Cannot open this URL</string>
 
     <!-- Context menu: Share transcript prompt -->
@@ -72,21 +71,21 @@
     <!-- Preference labels -->
     <string name="pref_cat_qemu">QEMU</string>
     <string name="qemu_ram_title">RAM</string>
-    <string name="qemu_ram_desc">Maximal amount of RAM that can be used by QEMU virtual machine.\n\n* Too high values may result in application or device crash.</string>
+    <string name="qemu_ram_desc">Maximal amount of RAM that may be allocated for virtual machine.\n\nOptimal values are lower than half of physical RAM available on your device.</string>
     <string name="qemu_hdd1_path_title">Primary hard drive</string>
-    <string name="qemu_hdd1_path_desc">Path to the disk image that will be used as primary hard drive. If the file is not exist, the snapshot image with the Alpine Linux will be created.\n\n* This is a default boot device.\n\n* Depending on usage, the image file can grow up to several gigabytes.</string>
+    <string name="qemu_hdd1_path_desc">Path to a disk image that will be used as primary hard drive. If the image file is not exist, Alpine Term will generate a snapshot of internal hard drive with pre-installed OS.\n\n* This is a default boot device.\n\n* Depending on usage, the image file can grow up to several gigabytes.</string>
     <string name="qemu_hdd1_path_hint">Leave empty to use default.</string>
     <string name="qemu_hdd2_path_title">Secondary hard drive</string>
-    <string name="qemu_hdd2_path_desc">Path to the disk image that will be used as secondary drive.\n\n* Can be selected as boot device from bios menu.\n\n* Depending on usage, the image file can grow up to several gigabytes.</string>
+    <string name="qemu_hdd2_path_desc">Path to a disk image that will be used as secondary drive.\n\n* Can be selected as boot device from bios menu.\n\n* Depending on usage, the image file can grow up to several gigabytes.</string>
     <string name="qemu_hdd2_path_hint">Leave empty to disable.</string>
     <string name="qemu_cdrom_path_title">CD-ROM</string>
-    <string name="qemu_cdrom_path_desc">Path to the disk image that will be used as CD-ROM.\n\n* Can be selected as boot device from bios menu.</string>
+    <string name="qemu_cdrom_path_desc">Path to a disk image that will be used as CD-ROM.\nCan be selected as boot device from bios menu.</string>
     <string name="qemu_cdrom_path_hint">Leave empty to disable.</string>
     <string name="qemu_upstream_dns_title">Upstream DNS</string>
-    <string name="qemu_upstream_dns_desc">A DNS server to which all queries from QEMU will be forwarded.\n\n* Guest OS should be configured to use QEMU\'s internal DNS (10.0.2.3) otherwise this option will not have any effect. Usually, DHCP configures this automatically.</string>
+    <string name="qemu_upstream_dns_desc">A destination where QEMU will forward all queries from internal DNS server.\n\nGuest OS should be configured to use QEMU\&apos;s internal DNS (10.0.2.3) otherwise this option will not have any effect.</string>
     <string name="qemu_upstream_dns_hint">1.1.1.1</string>
     <string name="qemu_exposed_ports_title">Exposed ports</string>
-    <string name="qemu_exposed_ports_desc">A list of port forwarding rules. Each rule has the following format:\n\n{proto}:{external port}:{internal port}\n\nYou can specify multiple rules by separating them with commas.\n\n* External ports lower than 1024 are not allowed.</string>
+    <string name="qemu_exposed_ports_desc">A list of port forwarding rules. Each rule has the following format:\n\n{proto}:{external port}:{internal port}\n\nYou can specify multiple rules by separating them with commas.\n\nExternal ports lower than 1024 cannot be used.</string>
     <string name="qemu_exposed_ports_hint">tcp:8080:80, udp:5353:53, etc…</string>
 
     <!-- Preference dialogs -->
