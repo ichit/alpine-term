@@ -98,7 +98,6 @@ terminal. It provides menu entries for:
  - Selecting and pasting text.
  - Sharing text from the terminal to other apps (e.g. email or SMS).
  - Resetting the terminal if it gets stuck.
- - A setting to control whether screen should be always on.
  - A setting to control whether back key should send ESC.
  - A setting to control whether bell characters should be ignored.
 
