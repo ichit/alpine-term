@@ -35,7 +35,6 @@
     <string name="menu_select_url">Select URL</string>
     <string name="menu_share_transcript">Share transcript</string>
     <string name="menu_reset_terminal">Reset</string>
-    <string name="menu_toggle_keep_screen_on">Keep screen on</string>
     <string name="menu_toggle_back_is_escape">Remap key \&quot;back\&quot; to \&quot;escape\&quot;</string>
     <string name="menu_toggle_ignore_bell">Ignore bell character</string>
 

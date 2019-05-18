@@ -91,9 +91,8 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
     private static final int CONTEXTMENU_SHARE_TRANSCRIPT_ID = 3;
     private static final int CONTEXTMENU_PASTE_ID = 4;
     private static final int CONTEXTMENU_RESET_TERMINAL_ID = 5;
-    private static final int CONTEXTMENU_TOGGLE_KEEP_SCREEN_ON = 6;
-    private static final int CONTEXTMENU_TOGGLE_BACK_IS_ESCAPE = 7;
-    private static final int CONTEXTMENU_TOGGLE_IGNORE_BELL = 8;
+    private static final int CONTEXTMENU_TOGGLE_BACK_IS_ESCAPE = 6;
+    private static final int CONTEXTMENU_TOGGLE_IGNORE_BELL = 7;
 
     private static final int REQUESTCODE_PERMISSION_STORAGE = 1234;
 
@@ -300,7 +299,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
         mFontSize = Math.max(MIN_FONTSIZE, Math.min(mFontSize, MAX_FONTSIZE));
 
         mTerminalView.setTextSize(mFontSize);
-        mTerminalView.setKeepScreenOn(mSettings.isScreenAlwaysOn());
+        mTerminalView.setKeepScreenOn(true);
         mTerminalView.requestFocus();
 
         final ViewPager viewPager = findViewById(R.id.viewpager);
@@ -664,7 +663,6 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
         menu.add(Menu.NONE, CONTEXTMENU_SELECT_URL_ID, Menu.NONE, R.string.menu_select_url);
         menu.add(Menu.NONE, CONTEXTMENU_SHARE_TRANSCRIPT_ID, Menu.NONE, R.string.menu_share_transcript);
         menu.add(Menu.NONE, CONTEXTMENU_RESET_TERMINAL_ID, Menu.NONE, R.string.menu_reset_terminal);
-        menu.add(Menu.NONE, CONTEXTMENU_TOGGLE_KEEP_SCREEN_ON, Menu.NONE, R.string.menu_toggle_keep_screen_on).setCheckable(true).setChecked(mSettings.isScreenAlwaysOn());
         menu.add(Menu.NONE, CONTEXTMENU_TOGGLE_BACK_IS_ESCAPE, Menu.NONE, R.string.menu_toggle_back_is_escape).setCheckable(true).setChecked(mSettings.isBackEscape());
         menu.add(Menu.NONE, CONTEXTMENU_TOGGLE_IGNORE_BELL, Menu.NONE, R.string.menu_toggle_ignore_bell).setCheckable(true).setChecked(mSettings.isBellIgnored());
     }
@@ -708,16 +706,6 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                 if (session != null) {
                     session.reset();
                     showToast(getResources().getString(R.string.reset_toast_notification), true);
-                }
-                return true;
-            }
-            case CONTEXTMENU_TOGGLE_KEEP_SCREEN_ON: {
-                if (mTerminalView.getKeepScreenOn()) {
-                    mTerminalView.setKeepScreenOn(false);
-                    mSettings.setScreenAlwaysOn(this, false);
-                } else {
-                    mTerminalView.setKeepScreenOn(true);
-                    mSettings.setScreenAlwaysOn(this, true);
                 }
                 return true;
             }

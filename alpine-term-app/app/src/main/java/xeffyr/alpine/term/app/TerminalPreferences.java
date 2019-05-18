@@ -14,12 +14,10 @@ final class TerminalPreferences {
 
     private static final String CURRENT_SESSION_KEY = "current_session";
     private static final String SHOW_EXTRA_KEYS_KEY = "show_extra_keys";
-    private static final String SCREEN_ALWAYS_ON_KEY = "screen_always_on";
     private static final String BACK_IS_ESCAPE = "back_is_escape";
     private static final String IGNORE_BELL = "ignore_bell";
 
     private boolean mShowExtraKeys;
-    private boolean mScreenAlwaysOn;
     private boolean mBackIsEscape;
     private boolean mIgnoreBellCharacter;
 
@@ -27,7 +25,6 @@ final class TerminalPreferences {
     TerminalPreferences(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         mShowExtraKeys = prefs.getBoolean(SHOW_EXTRA_KEYS_KEY, true);
-        mScreenAlwaysOn = prefs.getBoolean(SCREEN_ALWAYS_ON_KEY, false);
         mBackIsEscape = prefs.getBoolean(BACK_IS_ESCAPE, false);
         mIgnoreBellCharacter = prefs.getBoolean(IGNORE_BELL, false);
     }
@@ -55,15 +52,6 @@ final class TerminalPreferences {
         mShowExtraKeys = !mShowExtraKeys;
         PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(SHOW_EXTRA_KEYS_KEY, mShowExtraKeys).apply();
         return mShowExtraKeys;
-    }
-
-    public boolean isScreenAlwaysOn() {
-        return mScreenAlwaysOn;
-    }
-
-    public void setScreenAlwaysOn(Context context, boolean newValue) {
-        mScreenAlwaysOn = newValue;
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(SCREEN_ALWAYS_ON_KEY, newValue).apply();
     }
 
     public boolean isBackEscape() {
