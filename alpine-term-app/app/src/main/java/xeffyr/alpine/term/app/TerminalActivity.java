@@ -99,7 +99,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
 
     private final int MAX_FONTSIZE = 256;
     private int MIN_FONTSIZE;
-    private int mFontSize;
+    static int currentFontSize = -1;
 
     /**
      * The main view of the activity showing the terminal. Initialized in onCreate().
@@ -282,23 +282,23 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
         mTerminalView = findViewById(R.id.terminal_view);
         mTerminalView.setOnKeyListener(new InputDispatcher(this));
 
-
         float dipInPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics());
+        int defaultFontSize = Math.round(7.5f * dipInPixels);
+
+        // Make it divisible by 2 since that is the minimal adjustment step:
+        if (defaultFontSize % 2 == 1) defaultFontSize--;
+
+        if (TerminalActivity.currentFontSize == -1) {
+            TerminalActivity.currentFontSize = defaultFontSize;
+        }
 
         // This is a bit arbitrary and sub-optimal. We want to give a sensible default for minimum
         // font size to prevent invisible text due to zoom be mistake:
         MIN_FONTSIZE = (int) (4f * dipInPixels);
 
-        // http://www.google.com/design/spec/style/typography.html#typography-line-height
-        int mDefaultFontSize = Math.round(7.5f * dipInPixels);
+        TerminalActivity.currentFontSize = Math.max(MIN_FONTSIZE, Math.min(TerminalActivity.currentFontSize, MAX_FONTSIZE));
+        mTerminalView.setTextSize(TerminalActivity.currentFontSize);
 
-        // Make it divisible by 2 since that is the minimal adjustment step:
-        if (mDefaultFontSize % 2 == 1) mDefaultFontSize--;
-
-        mFontSize = mDefaultFontSize;
-        mFontSize = Math.max(MIN_FONTSIZE, Math.min(mFontSize, MAX_FONTSIZE));
-
-        mTerminalView.setTextSize(mFontSize);
         mTerminalView.setKeepScreenOn(true);
         mTerminalView.requestFocus();
 
@@ -469,20 +469,14 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
 
             @Override
             public void onSessionFinished(final TerminalSession finishedSession) {
+                // Needed for resetting font size on next application launch
+                // otherwise it will be reset only after force-closing.
+                TerminalActivity.currentFontSize = -1;
+
                 if (mTermService.mWantsToStop) {
                     // The service wants to stop as soon as possible.
                     finish();
                     return;
-                }
-
-                if (mIsVisible && finishedSession != getCurrentTermSession()) {
-                    // Show toast for non-current sessions that exit.
-                    int indexOfSession = mTermService.getSessions().indexOf(finishedSession);
-
-                    // Verify that session was not removed before we got told about it finishing:
-                    if (indexOfSession >= 0) {
-                        showToast(toToastTitle(finishedSession) + " - exited", true);
-                    }
                 }
 
                 removeFinishedSession(finishedSession);
@@ -773,9 +767,9 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
     }
 
     public void changeFontSize(boolean increase) {
-        mFontSize += (increase ? 1 : -1) * 2;
-        mFontSize = Math.max(MIN_FONTSIZE, Math.min(mFontSize, MAX_FONTSIZE));
-        mTerminalView.setTextSize(mFontSize);
+        TerminalActivity.currentFontSize += (increase ? 1 : -1) * 2;
+        TerminalActivity.currentFontSize = Math.max(MIN_FONTSIZE, Math.min(TerminalActivity.currentFontSize, MAX_FONTSIZE));
+        mTerminalView.setTextSize(TerminalActivity.currentFontSize);
     }
 
     public void doPaste() {
