@@ -233,7 +233,7 @@ qemu_session() {
     else
         msg "FAIL"
         msg
-        msg "[BUG]: Base OS image is corrupted."
+        msg "Base OS image is corrupted or from older application version."
         msg
         msg "You need to erase application's data via Android settings to be able to re-install a sane environment."
         msg
