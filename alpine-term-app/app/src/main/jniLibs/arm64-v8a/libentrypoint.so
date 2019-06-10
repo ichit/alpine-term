@@ -63,7 +63,7 @@ readonly EXTERNAL_STORAGE
 declare -r OS_IMAGE_PATH="${PREFIX}/os_image.qcow2"
 
 # A SHA-256 checksum for the OS image.
-declare -r OS_IMAGE_SHA256="fe0f9189585656b773b6a1d24a706da8ad5ce95c6c74e5fb94ce9727577bc08d"
+declare -r OS_IMAGE_SHA256="e1bfbd5e8e081940254f39f10575293e9357c053113efafbcd031cd5703c15fb"
 
 # A path to the persistent CD-ROM image.
 declare -r OS_CDROM_PATH="${PREFIX}/os_cdrom.iso"
