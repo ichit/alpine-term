@@ -194,6 +194,8 @@ qemu_session() {
         if [ "${1}" = "sandbox-mode" ]; then
             QEMU_SANDBOX_MODE=true
         else
+            libbash.so -c "libbusybox.so killall -9 libsocat.so"
+
             msg
             msg "[BUG]: qemu_session() received unknown argument '${1}'."
             msg
@@ -213,6 +215,8 @@ qemu_session() {
         msg "OK"
         unset CURRENT_SHA256
     else
+        libbash.so -c "libbusybox.so killall -9 libsocat.so"
+
         msg "FAIL"
         msg
         msg "[BUG]: OS CD-ROM image is corrupted."
@@ -223,7 +227,7 @@ qemu_session() {
 
         libbusybox.so stty sane
         read -rs -p "Press enter to exit..."
-        exec libbash.so -c "libbusybox.so killall -9 libsocat.so; libbusybox.so killall -9 libbash.so; exit 1" > /dev/null 2>&1
+        exec libbash.so -c "libbusybox.so killall -9 libbash.so; exit 1" > /dev/null 2>&1
     fi
     msg -n "Verifying OS HDD image... "
     CURRENT_SHA256=$(libopenssl.so dgst -sha256 "${OS_IMAGE_PATH}" | libbusybox.so cut -d' ' -f2)
@@ -231,6 +235,8 @@ qemu_session() {
         msg "OK"
         unset CURRENT_SHA256
     else
+        libbash.so -c "libbusybox.so killall -9 libsocat.so"
+
         msg "FAIL"
         msg
         msg "Base OS image is corrupted or from older application version."
@@ -241,7 +247,7 @@ qemu_session() {
 
         libbusybox.so stty sane
         read -rs -p "Press enter to exit..."
-        exec libbash.so -c "libbusybox.so killall -9 libsocat.so; libbusybox.so killall -9 libbash.so; exit 1" > /dev/null 2>&1
+        exec libbash.so -c "libbusybox.so killall -9 libbash.so; exit 1" > /dev/null 2>&1
     fi
 
     # Create snapshot image if needed. Use in-memory snapshot
