@@ -747,7 +747,6 @@ public final class TerminalView extends View {
 
         if (mEmulator == null || (newColumns != mEmulator.mColumns || newRows != mEmulator.mRows)) {
             mTermSession.updateSize(newColumns, newRows);
-            mTermSession.reset();
             mEmulator = mTermSession.getEmulator();
 
             mTopRow = 0;
