@@ -352,6 +352,9 @@ qemu_session() {
     # Disable parallel port.
     set -- "${@}" "-parallel" "none"
 
+    # Set path to firmware & keymap files.
+    set -- "${@}" "-L" "${PREFIX}/share/qemu"
+
     msg
     echo -ne "\\a"
     unblock_terminal
