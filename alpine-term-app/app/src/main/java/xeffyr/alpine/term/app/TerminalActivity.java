@@ -811,12 +811,12 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                 } catch (Exception e) {
                     // Ignore.
                 }
+            }
 
-                try {
-                    envTmpDir.mkdirs();
-                } catch (Exception e) {
-                    Log.e(EmulatorDebug.LOG_TAG, "error while creating directory for temporary files", e);
-                }
+            try {
+                envTmpDir.mkdirs();
+            } catch (Exception e) {
+                Log.e(EmulatorDebug.LOG_TAG, "error while creating directory for temporary files", e);
             }
         }
 
