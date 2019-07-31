@@ -138,7 +138,7 @@ public class TerminalStyleActivity extends Activity {
             executeIntent.putExtra(TerminalActivity.INTENT_ACTION_RELOAD, "console_style");
             sendBroadcast(executeIntent);
         } catch (Exception e) {
-            Log.w(EmulatorDebug.LOG_TAG, "Failed to write " + outputFileName, e);
+            Log.e(EmulatorDebug.LOG_TAG, "Failed to write " + outputFileName, e);
             Toast.makeText(this, R.string.style_toast_install_failed, Toast.LENGTH_LONG).show();
         }
     }
