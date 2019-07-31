@@ -96,9 +96,7 @@ declare -r QEMU_PIDFILE_PATH="${TMPDIR}/qemu_running.pid"
 # A path to the CD-ROM image. Completely managed by user.
 : "${CONFIG_QEMU_CDROM_PATH:=}"
 
-# An IP address of upstream DNS server. Actually this variable is used
-# only for storing value. The value used by QEMU is stored in
-# file ${PREFIX}/etc/resolv.conf.
+# An IP address of upstream DNS server.
 : "${CONFIG_QEMU_DNS:=1.1.1.1}"
 
 # A set of rules for port forwarding.
@@ -388,11 +386,7 @@ serial_console_session() {
 ##############################################################################
 
 # Ensure that following files and directories are read-writable.
-libbusybox.so chmod 600 "${PREFIX}/etc/resolv.conf" || true
 libbusybox.so chmod 700 "${PREFIX}/tmp" > /dev/null 2>&1 || true
-
-# Update DNS in resolv.conf file.
-echo "nameserver ${CONFIG_QEMU_DNS}" > "${PREFIX}/etc/resolv.conf"
 
 if [ "${#}" -gt 0 ]; then
     # $1 specifies session type. For available values, see client

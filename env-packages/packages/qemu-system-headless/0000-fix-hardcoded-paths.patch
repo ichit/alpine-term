@@ -179,49 +179,6 @@ diff -uNr qemu-4.0.0/qemu-options.hx qemu-4.0.0.mod/qemu-options.hx
      "                to deconfigure it\n"
      "                use '[down]script=no' to disable script execution\n"
      "                use network helper 'helper' (default=" DEFAULT_BRIDGE_HELPER ") to\n"
-diff -uNr qemu-4.0.0/slirp/src/slirp.c qemu-4.0.0.mod/slirp/src/slirp.c
---- qemu-4.0.0/slirp/src/slirp.c	2019-04-23 21:14:46.000000000 +0300
-+++ qemu-4.0.0.mod/slirp/src/slirp.c	2019-04-30 15:56:37.710667145 +0300
-@@ -124,14 +124,20 @@
-                                struct stat *cached_stat, unsigned *cached_time)
- {
-     struct stat old_stat;
-+
-     if (curtime - *cached_time < TIMEOUT_DEFAULT) {
-         memcpy(pdns_addr, cached_addr, addrlen);
-         return 0;
-     }
-+
-     old_stat = *cached_stat;
--    if (stat("/etc/resolv.conf", cached_stat) != 0) {
-+
-+    int ret = stat("@TERMUX_PREFIX@/etc/resolv.conf", cached_stat);
-+
-+    if (ret != 0) {
-         return -1;
-     }
-+
-     if (cached_stat->st_dev == old_stat.st_dev
-         && cached_stat->st_ino == old_stat.st_ino
-         && cached_stat->st_size == old_stat.st_size
-@@ -139,6 +145,7 @@
-         memcpy(pdns_addr, cached_addr, addrlen);
-         return 0;
-     }
-+
-     return 1;
- }
- 
-@@ -153,7 +160,8 @@
-     void *tmp_addr = alloca(addrlen);
-     unsigned if_index;
- 
--    f = fopen("/etc/resolv.conf", "r");
-+    f = fopen("@TERMUX_PREFIX@/etc/resolv.conf", "r");
-+
-     if (!f)
-         return -1;
- 
 diff -uNr qemu-4.0.0/tcg/tcg.c qemu-4.0.0.mod/tcg/tcg.c
 --- qemu-4.0.0/tcg/tcg.c	2019-04-23 21:14:46.000000000 +0300
 +++ qemu-4.0.0.mod/tcg/tcg.c	2019-04-30 15:57:46.031820043 +0300

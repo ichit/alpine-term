@@ -1,0 +1,149 @@
+diff -uNr qemu-4.0.0/slirp/src/slirp.c qemu-4.0.0.mod/slirp/src/slirp.c
+--- qemu-4.0.0/slirp/src/slirp.c	2019-04-23 21:14:46.000000000 +0300
++++ qemu-4.0.0.mod/slirp/src/slirp.c	2019-07-31 20:57:47.796370209 +0300
+@@ -119,115 +119,59 @@
+ 
+ #else
+ 
+-static int get_dns_addr_cached(void *pdns_addr, void *cached_addr,
+-                               socklen_t addrlen,
+-                               struct stat *cached_stat, unsigned *cached_time)
+-{
+-    struct stat old_stat;
+-    if (curtime - *cached_time < TIMEOUT_DEFAULT) {
+-        memcpy(pdns_addr, cached_addr, addrlen);
+-        return 0;
+-    }
+-    old_stat = *cached_stat;
+-    if (stat("/etc/resolv.conf", cached_stat) != 0) {
+-        return -1;
+-    }
+-    if (cached_stat->st_dev == old_stat.st_dev
+-        && cached_stat->st_ino == old_stat.st_ino
+-        && cached_stat->st_size == old_stat.st_size
+-        && cached_stat->st_mtime == old_stat.st_mtime) {
+-        memcpy(pdns_addr, cached_addr, addrlen);
+-        return 0;
+-    }
+-    return 1;
+-}
+-
+ static int get_dns_addr_resolv_conf(int af, void *pdns_addr, void *cached_addr,
+                                     socklen_t addrlen, uint32_t *scope_id,
+                                     unsigned *cached_time)
+ {
+-    char buff[512];
+-    char buff2[257];
+-    FILE *f;
+-    int found = 0;
+     void *tmp_addr = alloca(addrlen);
++    char *env_dns_addr = getenv("CONFIG_QEMU_DNS");
++    int found = 1;
+     unsigned if_index;
+ 
+-    f = fopen("/etc/resolv.conf", "r");
+-    if (!f)
+-        return -1;
+-
+-    DEBUG_MISC("IP address of your DNS(s):");
+-    while (fgets(buff, 512, f) != NULL) {
+-        if (sscanf(buff, "nameserver%*[ \t]%256s", buff2) == 1) {
+-            char *c = strchr(buff2, '%');
+-            if (c) {
+-                if_index = if_nametoindex(c + 1);
+-                *c = '\0';
+-            } else {
+-                if_index = 0;
+-            }
+-
+-            if (!inet_pton(af, buff2, tmp_addr)) {
+-                continue;
++    if (!env_dns_addr || !inet_pton(af, env_dns_addr, tmp_addr)) {
++        if (af == AF_INET) {
++            if (!inet_pton(AF_INET, "1.1.1.1", tmp_addr)) {
++                found = 0;
+             }
+-            /* If it's the first one, set it to dns_addr */
+-            if (!found) {
+-                memcpy(pdns_addr, tmp_addr, addrlen);
+-                memcpy(cached_addr, tmp_addr, addrlen);
+-                if (scope_id) {
+-                    *scope_id = if_index;
+-                }
+-                *cached_time = curtime;
+-            }
+-
+-            if (++found > 3) {
+-                DEBUG_MISC("  (more)");
+-                break;
+-            } else if (slirp_debug & DBG_MISC) {
+-                char s[INET6_ADDRSTRLEN];
+-                const char *res = inet_ntop(af, tmp_addr, s, sizeof(s));
+-                if (!res) {
+-                    res = "  (string conversion error)";
+-                }
+-                DEBUG_MISC("  %s", res);
++        } else {
++            if (!inet_pton(AF_INET6, "2606:4700:4700::1111", tmp_addr)) {
++                found = 0;
+             }
+         }
+     }
+-    fclose(f);
+-    if (!found)
++
++    char *c = strchr(env_dns_addr, '%');
++   	if (c) {
++        if_index = if_nametoindex(c + 1);
++        *c = '\0';
++    } else {
++        if_index = 0;
++    }
++
++    memcpy(pdns_addr, tmp_addr, addrlen);
++    memcpy(cached_addr, tmp_addr, addrlen);
++
++    if (scope_id) {
++        *scope_id = if_index;
++    }
++
++    *cached_time = curtime;
++
++    if (!found) {
+         return -1;
++    }
++
+     return 0;
+ }
+ 
+ int get_dns_addr(struct in_addr *pdns_addr)
+ {
+-    static struct stat dns_addr_stat;
+-
+-    if (dns_addr.s_addr != 0) {
+-        int ret;
+-        ret = get_dns_addr_cached(pdns_addr, &dns_addr, sizeof(dns_addr),
+-                                  &dns_addr_stat, &dns_addr_time);
+-        if (ret <= 0) {
+-            return ret;
+-        }
+-    }
+     return get_dns_addr_resolv_conf(AF_INET, pdns_addr, &dns_addr,
+                                     sizeof(dns_addr), NULL, &dns_addr_time);
+ }
+ 
+ int get_dns6_addr(struct in6_addr *pdns6_addr, uint32_t *scope_id)
+ {
+-    static struct stat dns6_addr_stat;
+-
+-    if (!in6_zero(&dns6_addr)) {
+-        int ret;
+-        ret = get_dns_addr_cached(pdns6_addr, &dns6_addr, sizeof(dns6_addr),
+-                                  &dns6_addr_stat, &dns6_addr_time);
+-        if (ret <= 0) {
+-            return ret;
+-        }
+-    }
+     return get_dns_addr_resolv_conf(AF_INET6, pdns6_addr, &dns6_addr,
+                                     sizeof(dns6_addr),
+                                     scope_id, &dns6_addr_time);
