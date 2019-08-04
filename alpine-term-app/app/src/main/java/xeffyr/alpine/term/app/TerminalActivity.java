@@ -495,8 +495,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                 if (!mIsVisible) return;
 
                 if (!mSettings.isBellIgnored()) {
-                    Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-                    if (vibrator != null) vibrator.vibrate(50);
+                    BellUtil.with(TerminalActivity.this).doBell();
                 }
             }
 
