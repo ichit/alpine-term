@@ -687,16 +687,19 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                 if (session != null) {
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setType("text/plain");
-                    intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_transcript_file_name));
-
-                    String transcriptText = session.getEmulator().getScreen().getTranscriptText().trim();
+                    String transcriptText = session.getEmulator().getScreen().getTranscriptTextWithoutJoinedLines().trim();
+                    // See https://github.com/termux/termux-app/issues/1166.
                     final int MAX_LENGTH = 100_000;
                     if (transcriptText.length() > MAX_LENGTH) {
-                        int lengthToRemove = transcriptText.length() - MAX_LENGTH;
-                        transcriptText = transcriptText.substring(lengthToRemove);
+                        int cutOffIndex = transcriptText.length() - MAX_LENGTH;
+                        int nextNewlineIndex = transcriptText.indexOf('\n', cutOffIndex);
+                        if (nextNewlineIndex != -1 && nextNewlineIndex != transcriptText.length() - 1) {
+                            cutOffIndex = nextNewlineIndex + 1;
+                        }
+                        transcriptText = transcriptText.substring(cutOffIndex).trim();
                     }
                     intent.putExtra(Intent.EXTRA_TEXT, transcriptText);
-
+                    intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_transcript_file_name));
                     startActivity(Intent.createChooser(intent, getString(R.string.share_transcript_chooser_title)));
                 }
                 return true;
