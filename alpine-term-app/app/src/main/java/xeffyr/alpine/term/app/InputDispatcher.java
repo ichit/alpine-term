@@ -94,7 +94,7 @@ public final class InputDispatcher implements TerminalViewClient {
                 mActivity.changeFontSize(true);
             } else if (unicodeChar == '-') {
                 mActivity.changeFontSize(false);
-            } else if (unicodeChar >= '1' && unicodeChar <= '9') {
+            } else if (unicodeChar >= '1' && unicodeChar <= '5') {
                 int num = unicodeChar - '1';
                 TerminalService service = mActivity.mTermService;
                 if (service.getSessions().size() > num)
