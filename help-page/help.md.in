@@ -42,6 +42,7 @@ and [Advanced Bash-Scripting Guide](doc/bash-advanced.html).
  - [Getting started](#getting-started)
    - [Terminal](#terminal)
    - [Touch keyboard shortcuts](#touch-keyboard-shortcuts)
+   - [Hardware keyboard shortcuts](#hardware-keyboard-shortcuts)
    - [Settings](#settings)
    - [Exiting from application](#exiting-from-application)
 
@@ -237,6 +238,24 @@ is used to to produce certain input on these key combinations:
  - **Volume Up+V** → Show the volume control
  - **Volume Up+W** → Up arrow key
  - **Volume Up+X** → Alt+X
+
+#### Hardware keyboard shortcuts
+
+Following shortcuts in combination with **Ctrl+Alt** are available when using
+a hardware keyboard:
+
+ - **+/-** → Adjust text size
+ - **1-5** → Go to numbered session
+ - **M** → Show context menu
+ - **N** → Switch to next session
+ - **P** → Switch to previous session
+ - **R** → Rename current session
+ - **U** → Open URL selector
+ - **V** → Paste clipboard
+ - **Left arrow** → Close drawer
+ - **Right arrow** → Open drawer
+ - **Down arrow** → Alias for **N**
+ - **Up arrow** → Alias for **P**
 
 #### Settings
 
